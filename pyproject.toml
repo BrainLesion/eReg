@@ -8,7 +8,7 @@ enable = true
 [tool.poetry]
 name = "eReg"
 version = "0.0.0"
-description = "Panoptic Quality (PQ) computation for binary masks."
+description = "efficient, pythonic cross-platform image registrations"
 authors = ["Sarthak Pati", "Florian Kofler"]
 repository = "https://github.com/BrainLesion/eReg"
 homepage = "https://github.com/BrainLesion/eReg"
