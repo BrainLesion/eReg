@@ -3,7 +3,7 @@ TODO
 
 ## Installation
 
-With a Python 3.10+ environment, you can install panoptica from [pypi.org](https://pypi.org/project/ereg/)
+With a Python 3.10+ environment, you can install eReg from [pypi.org](https://pypi.org/project/eReg/)
 
 ```sh
 pip install ereg
