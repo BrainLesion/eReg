@@ -14,7 +14,7 @@ except Exception as error:
     sys.stderr.write("Warning: Could not open '%s' due %s\n" % ("README.md", error))
 
 try:
-    filepath = "SIMPLEREG/version.py"
+    filepath = "eReg/version.py"
     version_file = open(filepath)
     (__version__,) = re.findall('__version__ = "(.*)"', version_file.read())
 
@@ -38,7 +38,7 @@ requirements = [
 
 if __name__ == "__main__":
     setup(
-        name="SIMPLEREG",
+        name="eReg",
         version=__version__,
         author="FETS-AI",
         author_email="admin@fets.ai",
@@ -46,7 +46,7 @@ if __name__ == "__main__":
         packages=find_packages(),
         entry_points={
             "console_scripts": [
-                "register=SIMPLEREG.cli.run:main",
+                "register=eReg.cli.run:main",
             ],
         },
         classifiers=[
