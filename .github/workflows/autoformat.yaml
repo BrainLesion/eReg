@@ -1,0 +1,35 @@
+name: Lint
+
+on:
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  run-linters:
+    # Check if the comment contains the trigger /format-action.
+    # Check if the comments come from pull request, exclude those from issue.
+    if: |
+      contains(github.event.comment.body, ' /format-action') &&
+      contains(github.event.comment.html_url, '/pull/')
+    name: Run linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install Python dependencies
+        run: pip install black
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          black: true
+          black_auto_fix: true
+          git_name: "Lint GitHub Action"
+          git_email: "github-actions@github.com"
