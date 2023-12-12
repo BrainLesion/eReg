@@ -26,7 +26,7 @@ import SimpleITK as sitk
 
 
 def read_image_and_cast_to_32bit_float(
-    input: Union[str, sitk.Image],
+    input_image: Union[str, sitk.Image],
 ) -> sitk.Image:
     """
     Cast an image to 32-bit float.
@@ -37,8 +37,8 @@ def read_image_and_cast_to_32bit_float(
     Returns:
         sitk.Image: The casted image.
     """
-    if isinstance(input, str):
-        input = sitk.ReadImage(input, sitk.sitkFloat32)
+    if isinstance(input_image, str):
+        input_image = sitk.ReadImage(input_image, sitk.sitkFloat32)
     caster = sitk.CastImageFilter()
     caster.SetOutputPixelType(sitk.sitkFloat32)
-    return caster.Execute(input)
+    return caster.Execute(input_image)
