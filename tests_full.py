@@ -1,4 +1,6 @@
-import os, tempfile, shutil
+import os
+import shutil
+import tempfile
 from pathlib import Path
 
 from ereg.cli.run import main
