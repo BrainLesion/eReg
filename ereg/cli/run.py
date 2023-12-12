@@ -10,9 +10,9 @@ from tqdm import tqdm
 
 def main(args=None):
     parser = argparse.ArgumentParser(
-        prog=f"MAIN_Entry v{__version__}",
+        prog=f"eReg v{__version__}",
         formatter_class=argparse.RawTextHelpFormatter,
-        description="Description goes here.\n\n",
+        description="Simple registration.\n\n",
     )
     registration_obj = RegistrationClass()
     # required parameters
