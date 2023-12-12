@@ -164,7 +164,7 @@ class RegistrationClass:
 
         # check for composite transforms
         self.parameters["composite_transform"] = self.parameters.get(
-            "composite_transform", False
+            "composite_transform", None
         )
         if self.parameters["composite_transform"]:
             self.parameters["previous_transforms"] = self.parameters.get(
@@ -215,6 +215,7 @@ class RegistrationClass:
             "value_tolerance": 1e-6,  # powell
             "relaxation": 0.5,  # regular_step_gradient_descent
             "tolerance": 1e-4,  # regular_step_gradient_descent
+            "rigid_registration": False,
         }
 
         # check for optimizer parameters in config file
@@ -289,9 +290,9 @@ class RegistrationClass:
             sitk.WriteTransform(transform, transform_file)
 
         # apply composite transform if provided
-        if transform_composite is not None:
+        if self.parameters["composite_transform"] is not None:
             self.logger.info("Applying composite transform.")
-            transform_composite = sitk.ReadTransform(transform_composite)
+            transform_composite = sitk.ReadTransform(self.parameters["composite_transform"])
             transform = sitk.CompositeTransform(transform_composite, transform)
 
         if self.parameters["composite_transform"]:
@@ -747,23 +748,25 @@ class RegistrationClass:
             raise RuntimeError("Registration failed.")
 
         registration_transform_sitk = output_transform
-        if self.parameters["rigid_registration"]:
-            try:
-                # Euler Transform used:
-                registration_transform_sitk = eval(
-                    "sitk.Euler%dDTransform(registration_transform_sitk)" % (dimension)
-                )
-            except:
-                # VersorRigid used: Transform from VersorRigid to Euler
-                registration_transform_sitk = eval(
-                    "sitk.VersorRigid%dDTransform(registration_transform_sitk)"
-                    % (dimension)
-                )
-                tmp = eval("sitk.Euler%dDTransform()" % (dimension))
-                tmp.SetMatrix(registration_transform_sitk.GetMatrix())
-                tmp.SetTranslation(registration_transform_sitk.GetTranslation())
-                tmp.SetCenter(registration_transform_sitk.GetCenter())
-                registration_transform_sitk = tmp
+        if "rigid_registration" in self.parameters:
+            if self.parameters["rigid_registration"]:
+                try:
+                    # Euler Transform used:
+                    registration_transform_sitk = eval(
+                        "sitk.Euler%dDTransform(registration_transform_sitk)"
+                        % (dimension)
+                    )
+                except:
+                    # VersorRigid used: Transform from VersorRigid to Euler
+                    registration_transform_sitk = eval(
+                        "sitk.VersorRigid%dDTransform(registration_transform_sitk)"
+                        % (dimension)
+                    )
+                    tmp = eval("sitk.Euler%dDTransform()" % (dimension))
+                    tmp.SetMatrix(registration_transform_sitk.GetMatrix())
+                    tmp.SetTranslation(registration_transform_sitk.GetTranslation())
+                    tmp.SetCenter(registration_transform_sitk.GetCenter())
+                    registration_transform_sitk = tmp
         ## additional information
         # print("Metric: ", R.MetricEvaluate(target_image, moving_image), flush=True)
         # print(
