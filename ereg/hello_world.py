@@ -1,2 +1,1 @@
-print('ereg rocks')
-
+print("ereg rocks")
