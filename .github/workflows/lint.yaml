@@ -32,3 +32,4 @@ jobs:
         uses: wearerequired/lint-action@v2
         with:
           black: true
+          black_args: "--exclude .git .github"
