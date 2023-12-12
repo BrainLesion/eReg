@@ -64,6 +64,7 @@ class RegistrationClass:
             "none",
         ]
         self.total_attempts = 5
+        self.log_file = None
         if config_file is not None:
             self.update_parameters(config_file)
 
@@ -201,10 +202,10 @@ class RegistrationClass:
             transform_file (str, optional): The transform file. Defaults to None.
         """
 
-        if log_file is None:
-            log_file = output_image.replace(".nii.gz", ".log")
+        if self.log_file is None:
+            self.log_file = output_image.replace(".nii.gz", ".log")
         logging.basicConfig(
-            filename=log_file,
+            filename=self.log_file,
             format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
             datefmt="%H:%M:%S",
             level=logging.DEBUG,
