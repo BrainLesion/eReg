@@ -46,7 +46,6 @@ optimizer_parameters: {
   maximum_line_iterations: 100, # powell
   step_tolerance: 1e-6, # powell
   value_tolerance: 1e-6, # powell
-
 }
 
 # The registration transform. Options: ["translation", "versor", "versor_rigid", "euler", "similarity", "scale", "scale_versor", "scale_skew_versor", "affine", "bspline", "displacement"]
