@@ -121,28 +121,13 @@ def main(args=None):
                 f"{os.path.splitext(os.path.basename(moving_image))[0]}_registered.nii.gz",
             )
 
+        if os.path.exists(args.config):
+            registration_obj.update_parameters(args.config)
         registration_obj.register(
             target_image=target_image,
             moving_image=moving_image,
             output_image=output_file,
             transform_file=args.transfile,
-            bias=args.bias,
-            metric=args.metric,
-            transform=args.transform,
-            transform_composite=args.transcomp,
-            initialization=args.initialize,
-            iterations=args.iterations,
-            relaxation=args.relaxation,
-            tolerance=args.tolerance,
-            maxstep=args.maxstep,
-            minstep=args.minstep,
-            interpolator=args.interpltr,
-            shrink_factors=args.shrink,
-            smoothing_sigmas=args.smooth,
-            sampling_strategy=args.sampling,
-            sampling_percentage=args.samplePerc,
-            attempts=args.attempts,
-            log_file=args.log_file,
         )
         ssim_scores[moving_image] = registration_obj.ssim_score
 
