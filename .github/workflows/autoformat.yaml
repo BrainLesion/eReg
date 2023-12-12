@@ -1,4 +1,4 @@
-name: Lint
+name: Autoformat
 
 on:
   issue_comment:
