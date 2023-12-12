@@ -5,7 +5,7 @@ on:
     types: [created, edited]
 
 jobs:
-  run-linters:
+  auto-format:
     # Check if the comment contains the trigger /format-action.
     # Check if the comments come from pull request, exclude those from issue.
     if: |
@@ -33,3 +33,4 @@ jobs:
           black_auto_fix: true
           git_name: "Lint GitHub Action"
           git_email: "github-actions@github.com"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
