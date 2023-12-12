@@ -33,3 +33,4 @@ jobs:
           black_auto_fix: true
           git_name: "Lint GitHub Action"
           git_email: "github-actions@github.com"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
