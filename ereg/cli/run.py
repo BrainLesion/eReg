@@ -1,10 +1,12 @@
-import argparse, ast, os
+import argparse
+import os
 from pathlib import Path
-from tqdm import tqdm
 from pprint import pprint
 
-from SIMPLEREG import __version__, RegistrationClass
+# TODO these imports crash
+from SIMPLEREG import RegistrationClass, __version__
 from SIMPLEREG.utilities import get_ssim
+from tqdm import tqdm
 
 
 def main(args=None):
