@@ -1,3 +1,4 @@
+# TODO delete this oonce all the relevant information is in the toml file
 # #!/usr/bin/env python
 
 # """The setup script."""
