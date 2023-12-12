@@ -162,3 +162,5 @@ cython_debug/
 
 *.lock
 .vscode
+
+data/tcia_aaac_t1ce_*
