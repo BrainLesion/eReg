@@ -15,23 +15,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v3
+      - name: Lint with black
+        uses: psf/black@stable
         with:
-          python-version: "3.x"
-
-      - name: Install Python dependencies
-        run: pip install black
-
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          black: true
-          black_auto_fix: true
-          black_args: "--exclude .git .github"
-          git_name: "Lint GitHub Action"
-          git_email: "github-actions@github.com"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          options: "--verbose"
+          src: "."
+          jupyter: true
+      - name: Push auto format changes
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Auto-format code with black performed by GitHub Action"
+          git push origin ${{ github.head_ref }}
