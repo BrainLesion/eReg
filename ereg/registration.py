@@ -185,34 +185,36 @@ class RegistrationClass:
 
         # this is taken directly from the sample_config.yaml
         default_optimizer_parameters = {
-            "min_step": 1e-6, # regular_step_gradient_descent
-            "max_step": 1.0, # gradient_descent, regular_step_gradient_descent
-            "maximumStepSizeInPhysicalUnits": 1.0, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent,
-            "iterations": 1000, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent, conjugate, lbfgsb, lbfgsb2
-            "learningrate": 1.0, # gradient_descent, gradient_descent_line_search
-            "convergence_minimum": 1e-6, # gradient_descent, gradient_descent_line_search
-            "convergence_window_size": 10, # gradient_descent, gradient_descent_line_search
-            "line_search_lower_limit": 0.0, # gradient_descent_line_search
-            "line_search_upper_limit": 5.0, # gradient_descent_line_search
-            "line_search_epsilon": 0.01, # gradient_descent_line_search
-            "step_length": 0.1, # conjugate, exhaustive, powell
-            "simplex_delta": 0.1, # amoeba
-            "maximum_number_of_corrections": 5, # lbfgsb, lbfgsb2
-            "maximum_number_of_function_evaluations": 2000, # lbfgsb, lbfgsb2
-            "solution_accuracy": 1e-5, # lbfgsb2
-            "hessian_approximate_accuracy": 1e-5, # lbfgsb2
-            "delta_convergence_distance": 1e-5, # lbfgsb2
-            "delta_convergence_tolerance": 1e-5, # lbfgsb2
-            "line_search_maximum_evaluations": 50, # lbfgsb2
-            "line_search_minimum_step": 1e-20, # lbfgsb2
-            "line_search_accuracy": 1e-4, # lbfgsb2
-            "epsilon": 1e-8, # one_plus_one_evolutionary
-            "initial_radius": 1.0, # one_plus_one_evolutionary
-            "growth_factor": -1.0, # one_plus_one_evolutionary
-            "shrink_factor": -1.0, # one_plus_one_evolutionary
-            "maximum_line_iterations": 100, # powell
-            "step_tolerance": 1e-6, # powell
-            "value_tolerance": 1e-6, # powell
+            "min_step": 1e-6,  # regular_step_gradient_descent
+            "max_step": 1.0,  # gradient_descent, regular_step_gradient_descent
+            "maximumStepSizeInPhysicalUnits": 1.0,  # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent,
+            "iterations": 1000,  # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent, conjugate, lbfgsb, lbfgsb2
+            "learningrate": 1.0,  # gradient_descent, gradient_descent_line_search
+            "convergence_minimum": 1e-6,  # gradient_descent, gradient_descent_line_search
+            "convergence_window_size": 10,  # gradient_descent, gradient_descent_line_search
+            "line_search_lower_limit": 0.0,  # gradient_descent_line_search
+            "line_search_upper_limit": 5.0,  # gradient_descent_line_search
+            "line_search_epsilon": 0.01,  # gradient_descent_line_search
+            "step_length": 0.1,  # conjugate, exhaustive, powell
+            "simplex_delta": 0.1,  # amoeba
+            "maximum_number_of_corrections": 5,  # lbfgsb, lbfgsb2
+            "maximum_number_of_function_evaluations": 2000,  # lbfgsb, lbfgsb2
+            "solution_accuracy": 1e-5,  # lbfgsb2
+            "hessian_approximate_accuracy": 1e-5,  # lbfgsb2
+            "delta_convergence_distance": 1e-5,  # lbfgsb2
+            "delta_convergence_tolerance": 1e-5,  # lbfgsb2
+            "line_search_maximum_evaluations": 50,  # lbfgsb2
+            "line_search_minimum_step": 1e-20,  # lbfgsb2
+            "line_search_accuracy": 1e-4,  # lbfgsb2
+            "epsilon": 1e-8,  # one_plus_one_evolutionary
+            "initial_radius": 1.0,  # one_plus_one_evolutionary
+            "growth_factor": -1.0,  # one_plus_one_evolutionary
+            "shrink_factor": -1.0,  # one_plus_one_evolutionary
+            "maximum_line_iterations": 100,  # powell
+            "step_tolerance": 1e-6,  # powell
+            "value_tolerance": 1e-6,  # powell
+            "relaxation": 0.5,  # regular_step_gradient_descent
+            "tolerance": 1e-4,  # regular_step_gradient_descent
         }
 
         # check for optimizer parameters in config file
@@ -224,7 +226,6 @@ class RegistrationClass:
         for key, value in default_optimizer_parameters.items():
             if key not in self.parameters["optimizer_parameters"]:
                 self.parameters["optimizer_parameters"][key] = value
-
 
     def register(
         self,
@@ -707,12 +708,14 @@ class RegistrationClass:
 
         if self.parameters["initialization"] is not None:
             temp_moving = moving_image
-            temp_initialization = self.parameters["initialization"]
-            if "self" in self.parameters["initialization"]:
+            temp_initialization = self.parameters["initialization"].upper()
+            # check for self initialization
+            if "SELF" in temp_initialization:
                 temp_moving = target_image
-                temp_initialization.replace("self", "")
-            if temp_initialization in ["moments", "geometry", "MOMENTS", "GEOMETRY"]:
-                initializer_type = self.parameters["initialization"].upper()
+                temp_initialization.replace("SELF", "")
+            if temp_initialization in ["MOMENTS", "GEOMETRY"]:
+                initializer_type = temp_initialization
+            else:
                 raise ValueError(
                     "Initializer type '%s' unknown"
                     % (self.parameters["initialization"])
