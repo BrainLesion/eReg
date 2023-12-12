@@ -13,6 +13,7 @@ from ereg.utilities import get_ssim
 
 def main(args=None):
     parser = argparse.ArgumentParser(
+        # TODO needs fix
         prog=f"eReg v{__version__}",
         formatter_class=argparse.RawTextHelpFormatter,
         description="Simple registration.\n\n",
