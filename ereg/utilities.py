@@ -1,5 +1,7 @@
+# TODO move these to utils?
 # import os, tempfile, requestsw
 from typing import Union
+
 import SimpleITK as sitk
 from skimage.metrics import structural_similarity as ssim
 
@@ -42,7 +44,9 @@ def read_image_and_cast_to_32bit_float(input: Union[str, sitk.Image]) -> sitk.Im
     return caster.Execute(input)
 
 
-def get_ssim(ground_truth: Union[str, sitk.Image], prediction: Union[str, sitk.Image]) -> float:
+def get_ssim(
+    ground_truth: Union[str, sitk.Image], prediction: Union[str, sitk.Image]
+) -> float:
     """
     Compare the ground truth image to the prediction image.
 
@@ -55,6 +59,6 @@ def get_ssim(ground_truth: Union[str, sitk.Image], prediction: Union[str, sitk.I
     """
     gt_image = sitk.GetArrayFromImage(read_image_and_cast_to_32bit_float(ground_truth))
     pred_image = sitk.GetArrayFromImage(read_image_and_cast_to_32bit_float(prediction))
-    
+
     dynamic_range = gt_image.max() - gt_image.min()
     return ssim(gt_image, pred_image, data_range=dynamic_range)
