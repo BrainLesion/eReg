@@ -77,6 +77,10 @@ class RegistrationClass:
         """
         if isinstance(config_file, str):
             self.parameters = yaml.safe_load(open(config_file, "r"))
+        elif isinstance(config_file, dict):
+            self.parameters = config_file
+        else:
+            raise ValueError("Config file must be a string or dictionary.")
 
         self.parameters["metric"] = (
             self.parameters.get("metric", "mean_squares")
@@ -822,7 +826,12 @@ def registration_function(
     Returns:
         float: The structural similarity index.
     """
-    assert os.path.isfile(config_file), "Config file does not exist."
+    if isinstance(config_file, str):
+        assert os.path.isfile(config_file), "Config file does not exist."
+    elif isinstance(config_file, dict):
+        pass
+    else:
+        raise ValueError("Config file must be a string or dictionary.")
 
     registration_obj = RegistrationClass(config_file)
     registration_obj.register(
