@@ -8,7 +8,8 @@ from ereg.utils.io import read_image_and_cast_to_32bit_float
 
 
 def get_ssim(
-    ground_truth: Union[str, sitk.Image], prediction: Union[str, sitk.Image]
+    ground_truth: Union[str, sitk.Image],
+    prediction: Union[str, sitk.Image],
 ) -> float:
     """
     Compare the ground truth image to the prediction image.
