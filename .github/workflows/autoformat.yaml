@@ -9,7 +9,7 @@ jobs:
     # Check if the comment contains the trigger /format-action.
     # Check if the comments come from pull request, exclude those from issue.
     if: |
-      contains(github.event.comment.body, '/format-action') &&
+      contains(github.event.comment.body, '@format-action') &&
       contains(github.event.comment.html_url, '/pull/')
     name: auto-format
     runs-on: ubuntu-latest
@@ -22,10 +22,5 @@ jobs:
           options: "--verbose"
           src: "."
           jupyter: true
-      - name: Push auto format changes
-        run: |
-          git config --local user.email "github-actions@github.com"
-          git config --local user.name "GitHub Actions"
-          git add .
-          git commit -m "Auto-format code with black performed by GitHub Action"
-          git push origin ${{ github.head_ref }}
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
