@@ -8,7 +8,7 @@ from tqdm import tqdm
 # TODO we need to fix this version thing in a different way
 # from ereg import RegistrationClass, __version__
 from ereg import RegistrationClass
-from ereg.utilities import get_ssim
+from ereg.utils.metrics import get_ssim
 
 
 def main(args=None):

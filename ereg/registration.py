@@ -8,7 +8,8 @@ import numpy as np
 import SimpleITK as sitk
 import yaml
 
-from .utilities import get_ssim, read_image_and_cast_to_32bit_float
+from ereg.utils.io import read_image_and_cast_to_32bit_float
+from ereg.utils.metrics import get_ssim
 
 
 class RegistrationClass:

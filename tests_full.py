@@ -5,7 +5,7 @@ from pathlib import Path
 
 from ereg.cli.run import main
 from ereg.registration import RegistrationClass, registration_function
-from ereg.utilities import read_image_and_cast_to_32bit_float
+from ereg.utils.io import read_image_and_cast_to_32bit_float
 
 
 def _image_sanity_check(image1, image2):
