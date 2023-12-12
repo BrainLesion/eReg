@@ -164,3 +164,4 @@ cython_debug/
 .vscode
 
 data/tcia_aaac_t1ce_*
+data/test_config.yaml
