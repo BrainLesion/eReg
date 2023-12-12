@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
       - main
-    types:
-      - synchronize # Triggered when a pull request is updated
 
 jobs:
   lint:
