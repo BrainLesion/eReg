@@ -17,49 +17,53 @@ def _image_sanity_check(image1, image2):
     ), "Image directions do not match."
 
 
-def test_main():
-    cwd = Path.cwd()
-    test_data_dir = (cwd / "data").absolute().as_posix()
-    atlas_data_dir = (cwd / "atlases").absolute().as_posix()
-    base_config_file = os.path.join(test_data_dir, "test_config.yaml")
-    moving_image = os.path.join(test_data_dir, "tcia_aaac_t1ce.nii.gz")
-    output_image = os.path.join(
-        tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
-    )
-    output_transform = os.path.join(
-        tempfile.gettempdir(), "tcia_aaac_t1ce_transform.mat"
-    )
-    atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
-    test_config = {"initialization": "moments"}
-    with open(base_config_file, "w") as f:
-        yaml.dump(test_config, f)
+# def test_main():
+#     cwd = Path.cwd()
+#     test_data_dir = (cwd / "data").absolute().as_posix()
+#     atlas_data_dir = (cwd / "atlases").absolute().as_posix()
+#     base_config_file = os.path.join(test_data_dir, "test_config.yaml")
+#     moving_image = os.path.join(test_data_dir, "tcia_aaac_t1ce.nii.gz")
+#     output_image = os.path.join(
+#         tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
+#     )
+#     output_transform = os.path.join(
+#         tempfile.gettempdir(), "tcia_aaac_t1ce_transform.mat"
+#     )
+#     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
+#     test_config = {"initialization": "moments"}
+#     with open(base_config_file, "w") as f:
+#         yaml.dump(test_config, f)
 
-    main(
-        [
-            "--movingImg",
-            moving_image,
-            "--targetImg",
-            atlas_sri,
-            "--output",
-            output_image,
-            "--transfile",
-            output_transform,
-            "--config",
-            base_config_file,
-        ]
-    )
-    _image_sanity_check(atlas_sri, output_image)
-    os.remove(output_image)
-    os.remove(output_transform)
+#     main(
+#         [
+#             "--movingImg",
+#             moving_image,
+#             "--targetImg",
+#             atlas_sri,
+#             "--output",
+#             output_image,
+#             "--transfile",
+#             output_transform,
+#             "--config",
+#             base_config_file,
+#         ]
+#     )
+#     _image_sanity_check(atlas_sri, output_image)
+#     os.remove(output_image)
+#     os.remove(output_transform)
 
 
 # def test_main_dir():
 #     cwd = Path.cwd()
 #     test_data_dir = (cwd / "data").absolute().as_posix()
 #     atlas_data_dir = (cwd / "atlases").absolute().as_posix()
+#     base_config_file = os.path.join(test_data_dir, "test_config.yaml")
 #     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
 #     # check dir processing
 #     output_dir = os.path.join(tempfile.gettempdir(), "dir_output")
+#     test_config = {"initialization": "moments"}
+#     with open(base_config_file, "w") as f:
+#         yaml.dump(test_config, f)
 #     main(
 #         [
 #             "--movingImg",
@@ -68,29 +72,31 @@ def test_main():
 #             atlas_sri,
 #             "--output",
 #             output_dir,
-#             "--initialize",
-#             "MOMENTS",
+#             "--config",
+#             base_config_file,
 #         ]
 #     )
 #     shutil.rmtree(output_dir)
 
 
-# def test_registration_function():
-#     cwd = Path.cwd()
-#     test_data_dir = (cwd / "data").absolute().as_posix()
-#     atlas_data_dir = (cwd / "atlases").absolute().as_posix()
-#     moving_image = os.path.join(test_data_dir, "tcia_aaac_t1ce.nii.gz")
-#     output_image = os.path.join(
-#         tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
-#     )
-#     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
-#     registration_function(
-#         target_image=atlas_sri,
-#         moving_image=moving_image,
-#         output_image=output_image,
-#     )
-#     _image_sanity_check(atlas_sri, output_image)
-#     os.remove(output_image)
+def test_registration_function():
+    cwd = Path.cwd()
+    test_data_dir = (cwd / "data").absolute().as_posix()
+    atlas_data_dir = (cwd / "atlases").absolute().as_posix()
+    moving_image = os.path.join(test_data_dir, "tcia_aaac_t1ce.nii.gz")
+    output_image = os.path.join(
+        tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
+    )
+    atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
+    test_config = {"initialization": "moments"}
+    registration_function(
+        target_image=atlas_sri,
+        moving_image=moving_image,
+        output_image=output_image,
+        config_file=test_config,
+    )
+    _image_sanity_check(atlas_sri, output_image)
+    os.remove(output_image)
 
 
 # def test_bias():
