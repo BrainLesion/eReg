@@ -1,6 +1,6 @@
 import os, logging, yaml
-from typing import Union, Dict, List
-from pprint import pprint
+from typing import Union
+# from pprint import pprint
 import SimpleITK as sitk
 import numpy as np
 
