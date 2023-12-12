@@ -1,10 +1,13 @@
-import os, logging, yaml
+import logging
+import os
 from typing import Union
+
+import numpy as np
 # from pprint import pprint
 import SimpleITK as sitk
-import numpy as np
+import yaml
 
-from .utilities import read_image_and_cast_to_32bit_float, get_ssim
+from .utilities import get_ssim, read_image_and_cast_to_32bit_float
 
 
 class RegistrationClass:
