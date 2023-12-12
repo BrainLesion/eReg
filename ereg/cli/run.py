@@ -1,4 +1,5 @@
 import argparse
+import importlib.metadata
 import os
 from pathlib import Path
 from pprint import pprint
@@ -10,11 +11,13 @@ from tqdm import tqdm
 from ereg import RegistrationClass
 from ereg.utils.metrics import get_ssim
 
+version = importlib.metadata.version("ereg")
+
 
 def main(args=None):
     parser = argparse.ArgumentParser(
         # TODO needs fix
-        prog=f"eReg v{__version__}",
+        prog=f"eReg version{version}",
         formatter_class=argparse.RawTextHelpFormatter,
         description="Simple registration.\n\n",
     )
