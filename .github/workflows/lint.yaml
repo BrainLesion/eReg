@@ -22,6 +22,9 @@ jobs:
         with:
           python-version: "3.x"
 
+      - name: Debug GitHub Token
+        run: echo "Token ${{ secrets.GITHUB_TOKEN }}""
+
       - name: Install Python dependencies
         run: pip install black
 
