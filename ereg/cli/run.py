@@ -3,9 +3,8 @@ import os
 from pathlib import Path
 from pprint import pprint
 
-# TODO these imports crash
-from SIMPLEREG import RegistrationClass, __version__
-from SIMPLEREG.utilities import get_ssim
+from ereg import RegistrationClass, __version__
+from ereg.utilities import get_ssim
 from tqdm import tqdm
 
 
