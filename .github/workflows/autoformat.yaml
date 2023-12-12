@@ -9,7 +9,7 @@ jobs:
     # Check if the comment contains the trigger /format-action.
     # Check if the comments come from pull request, exclude those from issue.
     if: |
-      contains(github.event.comment.body, ' /format-action') &&
+      contains(github.event.comment.body, '/format-action') &&
       contains(github.event.comment.html_url, '/pull/')
     name: auto-format
     runs-on: ubuntu-latest
