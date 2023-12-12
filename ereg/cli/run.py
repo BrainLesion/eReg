@@ -94,7 +94,7 @@ def main(args=None):
         if os.path.isdir(moving_image):
             dir_input = True
             moving_images_to_process.extend(
-                [str(x) for x in Path(moving_image).rglob("*") if x.is_file()]
+                [str(x) for x in Path(moving_image).rglob("*.nii.gz") if x.is_file()]
             )
         else:
             moving_images_to_process.append(moving_image)
@@ -109,6 +109,7 @@ def main(args=None):
         desc="Registering images",
         total=len(moving_images),
     )
+
     if dir_input:
         Path(args.output).mkdir(parents=True, exist_ok=True)
     for moving_image in moving_images_to_process:
