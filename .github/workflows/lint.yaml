@@ -26,8 +26,4 @@ jobs:
         run: pip install black
 
       - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          black: true
-          black_args: "--exclude .git .github"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: black --check .
