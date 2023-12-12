@@ -85,6 +85,7 @@ def test_registration_function():
         target_image=atlas_sri,
         moving_image=moving_image,
         output_image=output_image,
+        # TODO this test is dysfunctional without a config file
     )
     _image_sanity_check(atlas_sri, output_image)
     os.remove(output_image)
