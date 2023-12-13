@@ -300,7 +300,9 @@ class RegistrationClass:
             transform_composite = sitk.ReadTransform(
                 self.parameters["composite_transform"]
             )
-            self.transform = sitk.CompositeTransform(transform_composite, self.transform)
+            self.transform = sitk.CompositeTransform(
+                transform_composite, self.transform
+            )
 
         if self.parameters["composite_transform"]:
             self.logger.info("Applying previous transforms.")
@@ -308,36 +310,32 @@ class RegistrationClass:
             for previous_transform in self.parameters["previous_transforms"]:
                 previous_transform = sitk.ReadTransform(previous_transform)
                 current_transform = (
-                    sitk.CompositeTransform(previous_transform, transform)
+                    sitk.CompositeTransform(previous_transform, self.transform)
                     if current_transform is None
                     else sitk.CompositeTransform(previous_transform, current_transform)
                 )
 
             self.transform = current_transform
 
-        self.logger.info("Resampling image.")
-        resampler = sitk.ResampleImageFilter()
-        resampler.SetReferenceImage(target_image)
-        interpolator_type = self.interpolator_type.get(self.parameters["interpolator"])
-        resampler.SetInterpolator(interpolator_type)
-        resampler.SetDefaultPixelValue(0)
-        resampler.SetTransform(self.transform)
-        output_image_struct = resampler.Execute(moving_image)
-        sitk.WriteImage(output_image_struct, output_image)
-        self.ssim_score = get_ssim(target_image, output_image_struct)
-        self.logger.info(
-            f"SSIM score of moving against target image: {self.ssim_score}"
-        )
+        # no need for logging since resample_image will log by itself
         logging.shutdown()
 
+        # resample the moving image to the target image
+        self.resample_image(
+            target_image=target_image,
+            moving_image=moving_image,
+            output_image=output_image,
+            transform_file=transform_file,
+        )
+
     def resample_image(
-            self,
-            target_image: Union[str, sitk.Image],
-            moving_image: Union[str, sitk.Image],
-            output_image: str,
-            transform_file: str = None,
-            **kwargs,
-    ) -> None:        
+        self,
+        target_image: Union[str, sitk.Image],
+        moving_image: Union[str, sitk.Image],
+        output_image: str,
+        transform_file: str = None,
+        **kwargs,
+    ) -> None:
         """
         Resample the moving image to the target image.
 
@@ -362,14 +360,18 @@ class RegistrationClass:
                 )
                 self.logger = logging.getLogger("registration")
 
-                self.logger.info(f"Target image: {target_image}, Moving image: {moving_image}, Transform file: {transform_file}")
+                self.logger.info(
+                    f"Target image: {target_image}, Moving image: {moving_image}, Transform file: {transform_file}"
+                )
                 target_image = read_image_and_cast_to_32bit_float(target_image)
                 moving_image = read_image_and_cast_to_32bit_float(moving_image)
-                
+
                 self.logger.info("Resampling image.")
                 resampler = sitk.ResampleImageFilter()
                 resampler.SetReferenceImage(target_image)
-                interpolator_type = self.interpolator_type.get(self.parameters["interpolator"])
+                interpolator_type = self.interpolator_type.get(
+                    self.parameters["interpolator"]
+                )
                 resampler.SetInterpolator(interpolator_type)
                 resampler.SetDefaultPixelValue(0)
                 resampler.SetTransform(self.transform)
@@ -379,6 +381,7 @@ class RegistrationClass:
                 self.logger.info(
                     f"SSIM score of moving against target image: {self.ssim_score}"
                 )
+                logging.shutdown()
 
     def _get_transform_wrapper(self, transform: str, dim: int) -> sitk.Transform:
         """
