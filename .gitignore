@@ -162,3 +162,6 @@ cython_debug/
 
 *.lock
 .vscode
+
+data/tcia_aaac_t1ce_*
+data/test_config.yaml
