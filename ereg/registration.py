@@ -296,7 +296,9 @@ class RegistrationClass:
         # apply composite transform if provided
         if self.parameters["composite_transform"] is not None:
             self.logger.info("Applying composite transform.")
-            transform_composite = sitk.ReadTransform(self.parameters["composite_transform"])
+            transform_composite = sitk.ReadTransform(
+                self.parameters["composite_transform"]
+            )
             transform = sitk.CompositeTransform(transform_composite, transform)
 
         if self.parameters["composite_transform"]:
