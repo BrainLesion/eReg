@@ -64,7 +64,6 @@ class RegistrationClass:
             "none",
         ]
         self.total_attempts = 5
-        self.log_file = None
         self.transform = None
         if config_file is not None:
             self.update_parameters(config_file)
@@ -239,6 +238,7 @@ class RegistrationClass:
         moving_image: Union[str, sitk.Image],
         output_image: str,
         transform_file: str = None,
+        log_file: str = None,
         **kwargs,
     ) -> None:
         """
@@ -252,10 +252,10 @@ class RegistrationClass:
             transform_file (str, optional): The transform file. Defaults to None.
         """
 
-        if self.log_file is None:
-            self.log_file = output_image.replace(".nii.gz", ".log")
+        if log_file is None:
+            log_file = output_image.replace(".nii.gz", ".log")
         logging.basicConfig(
-            filename=self.log_file,
+            filename=log_file,
             format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
             datefmt="%H:%M:%S",
             level=logging.DEBUG,
@@ -334,6 +334,7 @@ class RegistrationClass:
         moving_image: Union[str, sitk.Image],
         output_image: str,
         transform_file: str = None,
+        log_file: str = None,
         **kwargs,
     ) -> None:
         """
@@ -350,10 +351,10 @@ class RegistrationClass:
         # check if output image exists
         if not os.path.exists(output_image):
             if self.transform is not None:
-                if self.log_file is None:
-                    self.log_file = output_image.replace(".nii.gz", ".log")
+                if log_file is None:
+                    log_file = output_image.replace(".nii.gz", ".log")
                 logging.basicConfig(
-                    filename=self.log_file,
+                    filename=log_file,
                     format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
                     datefmt="%H:%M:%S",
                     level=logging.DEBUG,
@@ -867,6 +868,7 @@ def registration_function(
     output_image: str,
     config_file: str,
     transform_file: str = None,
+    log_file: str = None,
     **kwargs,
 ) -> float:
     """
@@ -895,6 +897,7 @@ def registration_function(
         moving_image=moving_image,
         output_image=output_image,
         transform_file=transform_file,
+        log_file=log_file,
         **kwargs,
     )
     return registration_obj.ssim_score
