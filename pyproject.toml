@@ -27,7 +27,6 @@ rich = "^13.6.0"
 scikit-image = "^0.21.0"
 tqdm = "^4.64.1"
 SimpleITK = "^2.3.1"
-auxiliary = "^0.0.40"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"

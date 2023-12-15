@@ -7,7 +7,6 @@ import numpy as np
 # from pprint import pprint
 import SimpleITK as sitk
 import yaml
-from auxiliary.turbopath.turbopath import turbopath
 
 from ereg.utils.io import read_image_and_cast_to_32bit_float
 from ereg.utils.metrics import get_ssim
@@ -73,7 +72,11 @@ class RegistrationClass:
             self.parameters = self._generate_default_parameters()
 
     def _generate_default_parameters(self) -> dict:
-        defaults_file = turbopath(__file__ + "configurations/default_config.yaml")
+        defaults_file = os.path.normpath(
+            os.path.abspath(
+                __file__ + "configurations/default_config.yaml",
+            )
+        )
         default_parameters = self.parameters = yaml.safe_load(open(defaults_file, "r"))
         return default_parameters
 
