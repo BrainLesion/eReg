@@ -253,6 +253,7 @@ class RegistrationClass:
         """
 
         if log_file is None:
+            # TODO this will create trouble for non ".nii.gz" files
             log_file = output_image.replace(".nii.gz", ".log")
         logging.basicConfig(
             filename=log_file,
@@ -352,6 +353,7 @@ class RegistrationClass:
         if not os.path.exists(output_image):
             if self.transform is not None:
                 if log_file is None:
+                    # TODO this will create trouble for non ".nii.gz" file
                     log_file = output_image.replace(".nii.gz", ".log")
                 logging.basicConfig(
                     filename=log_file,
