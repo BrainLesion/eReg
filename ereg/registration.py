@@ -74,7 +74,7 @@ class RegistrationClass:
     def _generate_default_parameters(self) -> dict:
         defaults_file = os.path.normpath(
             os.path.abspath(
-                __file__ + "configurations/default_config.yaml",
+                __file__ + "configurations/default_rigid.yaml",
             )
         )
         default_parameters = self.parameters = yaml.safe_load(open(defaults_file, "r"))
