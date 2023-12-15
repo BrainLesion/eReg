@@ -123,7 +123,6 @@ class RegistrationClass:
         self.parameters["initialization"] = self.parameters.get(
             "initialization", "geometry"
         ).lower()
-        self.parameters["tolerance"] = self.parameters.get("tolerance", 1e-4)
         self.parameters["bias_correct"] = self.parameters.get(
             "bias_correct", self.parameters.get("bias", False)
         )

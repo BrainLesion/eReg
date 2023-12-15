@@ -22,8 +22,9 @@ optimizer_parameters: {
   max_step: 1.0, # gradient_descent, regular_step_gradient_descent
   maximumStepSizeInPhysicalUnits: 1.0, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent,
   iterations: 200, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent, conjugate, lbfgsb, lbfgsb2
-  relaxation: 0.5, # regular_step_gradient_descent
+  relaxation: 0.1, # regular_step_gradient_descent
   learningrate: 1.0, # gradient_descent, gradient_descent_line_search
+  tolerance: 1e-6, # gradient_descent, gradient_descent_line_search
   convergence_minimum: 1e-6, # gradient_descent, gradient_descent_line_search
   convergence_window_size: 10, # gradient_descent, gradient_descent_line_search
   line_search_lower_limit: 0.0, # gradient_descent_line_search
@@ -69,9 +70,6 @@ sampling_strategy: "random"
 
 # Sampling percentage. Can be a list of percentages with the same length as the number of levels.
 sampling_percentage: 0.01
-
-# Registration gradient tolerance
-tolerance: 1e-4
 
 # Shrink factor at each level for pyramid registration.
 shrink_factors: [4, 2, 1]
