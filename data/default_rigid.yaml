@@ -50,7 +50,7 @@ optimizer_parameters: {
 }
 
 # The registration transform. Options: ["translation", "versor", "versor_rigid", "euler", "similarity", "scale", "scale_versor", "scale_skew_versor", "affine", "bspline", "displacement"]
-transform: versor
+transform: versorrigid
 
 # Composite transform
 composite_transform: false
