@@ -20,7 +20,6 @@ optimizer: regular_step_gradient_descent
 optimizer_parameters: {
   min_step: 1e-6, # regular_step_gradient_descent
   max_step: 1.0, # gradient_descent, regular_step_gradient_descent
-  maximumStepSizeInPhysicalUnits: 1.0, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent,
   iterations: 1000, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent, conjugate, lbfgsb, lbfgsb2
   relaxation: 0.5, # regular_step_gradient_descent
   learningrate: 1.0, # gradient_descent, gradient_descent_line_search
