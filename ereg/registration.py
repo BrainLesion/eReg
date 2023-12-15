@@ -123,10 +123,6 @@ class RegistrationClass:
         self.parameters["initialization"] = self.parameters.get(
             "initialization", "geometry"
         ).lower()
-        self.parameters["max_step"] = self.parameters.get("max_step", 5.0)
-        self.parameters["min_step"] = self.parameters.get("min_step", 0.01)
-        self.parameters["iterations"] = self.parameters.get("iterations", 200)
-        self.parameters["relaxation"] = self.parameters.get("relaxation", 0.5)
         self.parameters["tolerance"] = self.parameters.get("tolerance", 1e-4)
         self.parameters["bias_correct"] = self.parameters.get(
             "bias_correct", self.parameters.get("bias", False)
