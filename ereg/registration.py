@@ -7,6 +7,7 @@ import numpy as np
 # from pprint import pprint
 import SimpleITK as sitk
 import yaml
+from auxiliary.turbopath.turbopath import turbopath
 
 from ereg.utils.io import read_image_and_cast_to_32bit_float
 from ereg.utils.metrics import get_ssim
@@ -15,7 +16,7 @@ from ereg.utils.metrics import get_ssim
 class RegistrationClass:
     def __init__(
         self,
-        config_file: Union[str, dict] = None,
+        configuration: Union[str, dict] = None,
         **kwargs,
     ) -> None:
         """
@@ -65,8 +66,25 @@ class RegistrationClass:
         ]
         self.total_attempts = 5
         self.transform = None
-        if config_file is not None:
-            self.update_parameters(config_file)
+
+        if configuration is not None:
+            self.update_parameters(configuration)
+        else:
+            self.parameters = self._generate_default_parameters()
+
+    def _generate_default_parameters(self) -> dict:
+        defaults_file = turbopath(__file__ + "configurations/default_config.yaml")
+        default_parameters = self.parameters = yaml.safe_load(open(defaults_file, "r"))
+        return default_parameters
+
+    @property
+    def configuration(self) -> dict:
+        return self.parameters
+
+    @configuration.setter
+    def configuration(self, new_config_file: Union[str, dict]) -> None:
+        self.parameters = self._generate_default_parameters()
+        self.update_parameters(config_file=new_config_file)
 
     def update_parameters(self, config_file: Union[str, dict], **kwargs):
         """
