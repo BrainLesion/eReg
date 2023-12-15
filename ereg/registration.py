@@ -188,6 +188,7 @@ class RegistrationClass:
         )
 
         # this is taken directly from the sample_config.yaml
+        # TODO this is ugly we should probbaly read these defaults from a file?
         default_optimizer_parameters = {
             "min_step": 1e-6,  # regular_step_gradient_descent
             "max_step": 1.0,  # gradient_descent, regular_step_gradient_descent
