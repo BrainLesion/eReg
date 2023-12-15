@@ -123,11 +123,6 @@ class RegistrationClass:
         self.parameters["initialization"] = self.parameters.get(
             "initialization", "geometry"
         ).lower()
-        self.parameters["max_step"] = self.parameters.get("max_step", 5.0)
-        self.parameters["min_step"] = self.parameters.get("min_step", 0.01)
-        self.parameters["iterations"] = self.parameters.get("iterations", 200)
-        self.parameters["relaxation"] = self.parameters.get("relaxation", 0.5)
-        self.parameters["tolerance"] = self.parameters.get("tolerance", 1e-4)
         self.parameters["bias_correct"] = self.parameters.get(
             "bias_correct", self.parameters.get("bias", False)
         )
@@ -738,7 +733,7 @@ class RegistrationClass:
             )
 
         # R.SetOptimizerScalesFromJacobian()
-        # R.SetOptimizerScalesFromPhysicalShift()
+        R.SetOptimizerScalesFromPhysicalShift()
 
         R.SetShrinkFactorsPerLevel(self.parameters["shrink_factors"])
         R.SetSmoothingSigmasPerLevel(self.parameters["smoothing_sigmas"])
@@ -746,6 +741,7 @@ class RegistrationClass:
         transform_function = self._get_transform_wrapper(
             self.parameters["transform"], dimension
         )
+        ## todo: evaluate the viability of having default options for "rigid", "affine", and "deformable" registrations
         # rigid_registration = False
         # # euler transforms need special processing
         # if isinstance(transform_function, sitk.Euler3DTransform) or isinstance(
@@ -792,6 +788,7 @@ class RegistrationClass:
             )
         R.SetInitialTransform(final_transform, inPlace=False)
         ## set the interpolator - all options: https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a7cb1ef8bd02c669c02ea2f9f5aa374e5
+        # this should be linear to optimize results and computational efficacy
         R.SetInterpolator(sitk.sitkLinear)
 
         # R.AddCommand(sitk.sitkIterationEvent, lambda: R)
@@ -811,25 +808,24 @@ class RegistrationClass:
             raise RuntimeError("Registration failed.")
 
         registration_transform_sitk = output_transform
-        if "rigid_registration" in self.parameters:
-            if self.parameters["rigid_registration"]:
-                try:
-                    # Euler Transform used:
-                    registration_transform_sitk = eval(
-                        "sitk.Euler%dDTransform(registration_transform_sitk)"
-                        % (dimension)
-                    )
-                except:
-                    # VersorRigid used: Transform from VersorRigid to Euler
-                    registration_transform_sitk = eval(
-                        "sitk.VersorRigid%dDTransform(registration_transform_sitk)"
-                        % (dimension)
-                    )
-                    tmp = eval("sitk.Euler%dDTransform()" % (dimension))
-                    tmp.SetMatrix(registration_transform_sitk.GetMatrix())
-                    tmp.SetTranslation(registration_transform_sitk.GetTranslation())
-                    tmp.SetCenter(registration_transform_sitk.GetCenter())
-                    registration_transform_sitk = tmp
+        # if user is requesting a rigid registration, convert the transform to a rigid transform
+        if self.parameters["transform"] in ["euler", "versorrigid"]:
+            try:
+                # Euler Transform used:
+                registration_transform_sitk = eval(
+                    "sitk.Euler%dDTransform(registration_transform_sitk)" % (dimension)
+                )
+            except:
+                # VersorRigid used: Transform from VersorRigid to Euler
+                registration_transform_sitk = eval(
+                    "sitk.VersorRigid%dDTransform(registration_transform_sitk)"
+                    % (dimension)
+                )
+                tmp = eval("sitk.Euler%dDTransform()" % (dimension))
+                tmp.SetMatrix(registration_transform_sitk.GetMatrix())
+                tmp.SetTranslation(registration_transform_sitk.GetTranslation())
+                tmp.SetCenter(registration_transform_sitk.GetCenter())
+                registration_transform_sitk = tmp
         ## additional information
         # print("Metric: ", R.MetricEvaluate(target_image, moving_image), flush=True)
         # print(

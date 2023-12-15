@@ -3,7 +3,7 @@ bias: false
 
 # The registration metric. Options: ["mattes_mutual_information", "ants_neighborhood_correlation", "correlation", "demons", "joint_histogram_mutual_information", "mean_squares"]
 # this can be a list as well, which will then become a multi-metric registration using composite transforms [https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1CompositeTransform.html]
-metric: mattes
+metric: mean_squares
 
 ## metric-specific parameters
 metric_parameters: {
@@ -18,12 +18,12 @@ optimizer: regular_step_gradient_descent
 
 ## optimizer-specific parameters
 optimizer_parameters: {
-  min_step: 1e-6, # regular_step_gradient_descent
+  min_step: 1e-4, # regular_step_gradient_descent
   max_step: 1.0, # gradient_descent, regular_step_gradient_descent
-  iterations: 1000, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent, conjugate, lbfgsb, lbfgsb2
-  relaxation: 0.5, # regular_step_gradient_descent
+  iterations: 200, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent, conjugate, lbfgsb, lbfgsb2
+  relaxation: 0.1, # regular_step_gradient_descent
   learningrate: 1.0, # gradient_descent, gradient_descent_line_search
-  tolerance: 1e-4, # gradient_descent, gradient_descent_line_search
+  tolerance: 1e-6, # gradient_descent, gradient_descent_line_search
   convergence_minimum: 1e-6, # gradient_descent, gradient_descent_line_search
   convergence_window_size: 10, # gradient_descent, gradient_descent_line_search
   line_search_lower_limit: 0.0, # gradient_descent_line_search
@@ -50,7 +50,7 @@ optimizer_parameters: {
 }
 
 # The registration transform. Options: ["translation", "versor", "versor_rigid", "euler", "similarity", "scale", "scale_versor", "scale_skew_versor", "affine", "bspline", "displacement"]
-transform: versor
+transform: versorrigid
 
 # Composite transform
 composite_transform: false
@@ -59,22 +59,22 @@ composite_transform: false
 previous_transforms: []
 
 # Transform initialization. Options: ["moments", "geometry", "selfmoments", "selfgeometry"]
-initialization: moments
+initialization: geometry
 
 # Interpolator. Options: ["linear", "bspline", "nearestneighbor", "gaussian", "labelgaussian"]
 interpolator: linear
 
 # Sampling strategy. Options: ["regular", "random", "none"]
-sampling_strategy: none
+sampling_strategy: "random"
 
 # Sampling percentage. Can be a list of percentages with the same length as the number of levels.
-sampling_percentage: 0.5
+sampling_percentage: 0.01
 
 # Shrink factor at each level for pyramid registration.
-shrink_factors: [2, 1]
+shrink_factors: [4, 2, 1]
 
 # Smoothing sigma at each level for pyramid registration.
-smoothing_sigmas: [1, 0]
+smoothing_sigmas: [2, 1, 0]
 
 # The number of attempts to try to find a good registration (useful when using random sampling)
 attempts: 5
