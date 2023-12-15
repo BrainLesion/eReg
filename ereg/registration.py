@@ -788,6 +788,7 @@ class RegistrationClass:
             )
         R.SetInitialTransform(final_transform, inPlace=False)
         ## set the interpolator - all options: https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a7cb1ef8bd02c669c02ea2f9f5aa374e5
+        # this should be linear to optimize results and computational efficacy
         R.SetInterpolator(sitk.sitkLinear)
 
         # R.AddCommand(sitk.sitkIterationEvent, lambda: R)
