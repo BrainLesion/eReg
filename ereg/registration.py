@@ -93,6 +93,7 @@ class RegistrationClass:
         Args:
             config_file (Union[str, dict]): The config file or dictionary.
         """
+        # TODO rewrite this function to only update specific entries which are given in the dict
         if isinstance(config_file, str):
             self.parameters = yaml.safe_load(open(config_file, "r"))
         elif isinstance(config_file, dict):
