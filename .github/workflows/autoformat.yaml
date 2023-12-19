@@ -15,6 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
+        with:
+          app_id: ${{ secrets.BOT_APP_ID }}
+          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
+
       - uses: xt0rted/pull-request-comment-branch@v2
         id: comment-branch
 
@@ -22,6 +29,7 @@ jobs:
         if: success()
         with:
           ref: ${{ steps.comment-branch.outputs.head_ref }}
+          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
 
       - name: Lint with black
         uses: psf/black@stable
@@ -29,13 +37,6 @@ jobs:
           options: "--verbose"
           src: "."
           jupyter: true
-
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
-        with:
-          app_id: ${{ secrets.BOT_APP_ID }}
-          private_key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
