@@ -29,7 +29,7 @@ jobs:
         if: success()
         with:
           ref: ${{ steps.comment-branch.outputs.head_ref }}
-          persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+          persist-credentials: false
 
       - name: Lint with black
         uses: psf/black@stable
@@ -38,9 +38,15 @@ jobs:
           src: "."
           jupyter: true
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Add and commit changes
+        run: |
+          git config --local user.name github-actions
+          git config --local user.email github-actions@github.com
+          git add .
+          git commit -am "Autoformat with black" || echo "No changes to commit"
+
+      - name: Push
+        uses: ad-m/github-push-action@master
         with:
-          commit_message: "Autoformat with black"
-        env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          github_token: ${{ steps.generate_token.outputs.token }}
+          branch: ${{ steps.comment-branch.outputs.head_ref }}
