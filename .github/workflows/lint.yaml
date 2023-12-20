@@ -19,3 +19,8 @@ jobs:
           options: "--check --verbose"
           src: "."
           jupyter: true
+      - name: Suggest format action on error
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            Hello world ! :wave:
