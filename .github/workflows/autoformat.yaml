@@ -9,12 +9,17 @@ jobs:
     # Check if the comment contains the trigger /format-action.
     # Check if the comments come from pull request, exclude those from issue.
     if: |
-      contains(github.event.comment.body, '@format-action') &&
-      contains(github.event.comment.html_url, '/pull/')
+      contains(github.event.comment.body, '/format')
     name: auto-format
     runs-on: ubuntu-latest
 
     steps:
+      - name: Inform user
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            :robot: I will now format your code with black. Check the status [here](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
+
       - name: Generate token
         id: generate_token
         uses: tibdex/github-app-token@b62528385c34dbc9f38e5f4225ac829252d1ea92
