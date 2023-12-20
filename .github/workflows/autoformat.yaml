@@ -9,7 +9,8 @@ jobs:
     # Check if the comment contains the trigger /format-action.
     # Check if the comments come from pull request, exclude those from issue.
     if: |
-      contains(github.event.comment.body, '/format')
+      contains(github.event.comment.body, '/format') &&
+      !contains(github.event.comment.user.login, 'brainless-bot')
     name: auto-format
     runs-on: ubuntu-latest
 
