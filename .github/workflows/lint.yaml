@@ -19,3 +19,14 @@ jobs:
           options: "--check --verbose"
           src: "."
           jupyter: true
+      - name: Suggest format action on error
+        if: failure()
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            🤖 **Code Formatting Reminder**
+
+            Hello there! 👋 It looks like the code in this pull request might benefit from some formatting improvements.
+            Fix the issues locally or use our auto format action by commenting `/format` on this PR!
+
+            [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)

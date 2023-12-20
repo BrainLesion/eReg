@@ -29,7 +29,7 @@ def registration_function(
         float: The structural similarity index.
     """
     if isinstance(config_file, str):
-        assert os.path.isfile(config_file), "Config file does not exist."
+        assert os.path.isfile(config_file), 'Config file does not exist.'
     elif isinstance(config_file, dict):
         pass
     else:
