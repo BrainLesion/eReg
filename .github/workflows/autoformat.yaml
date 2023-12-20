@@ -47,8 +47,8 @@ jobs:
 
       - name: Add and commit changes
         run: |
-          git config --local user.name github-actions[bot]
-          git config --local user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git config --local user.name brainless-bot[bot]
+          git config --local user.email 153751247+brainless-bot[bot]@users.noreply.github.com
           git add .
           git commit -am "Autoformat with black" || echo "No changes to commit"
 
