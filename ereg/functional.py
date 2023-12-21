@@ -10,7 +10,7 @@ def registration_function(
     target_image: Union[str, sitk.Image],
     moving_image: Union[str, sitk.Image],
     output_image: str,
-    config_file: str,
+    configuration: str,
     transform_file: str = None,
     log_file: str = None,
     **kwargs,
@@ -28,14 +28,14 @@ def registration_function(
     Returns:
         float: The structural similarity index.
     """
-    if isinstance(config_file, str):
-        assert os.path.isfile(config_file), "Config file does not exist."
-    elif isinstance(config_file, dict):
+    if isinstance(configuration, str):
+        assert os.path.isfile(configuration), "Config file does not exist."
+    elif isinstance(configuration, dict):
         pass
     else:
         raise ValueError("Config file must be a string or dictionary.")
 
-    registration_obj = RegistrationClass(config_file)
+    registration_obj = RegistrationClass(configuration)
     registration_obj.register(
         target_image=target_image,
         moving_image=moving_image,
