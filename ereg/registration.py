@@ -88,9 +88,19 @@ class RegistrationClass:
             .replace("-", "")
             .lower()
         )
+        default_metric_type = "mean_squares"
+        if "metric" in self.parameters:
+            print(
+                "WARNING: Please specify the 'metric' under the 'metric_parameters' key using 'type'."
+            )
+            default_metric_type = self.parameters["metric"]
+
         self.parameters["metric_parameters"] = self.parameters.get(
             "metric_parameters", {}
         )
+        self.parameters["metric_parameters"]["type"] = self.parameters[
+            "metric_parameters"
+        ].get("type", default_metric_type)
         self.parameters["metric_parameters"]["histogram_bins"] = self.parameters[
             "metric_parameters"
         ].get("histogram_bins", 50)
@@ -181,9 +191,16 @@ class RegistrationClass:
         self.parameters["optimizer"] = self.parameters.get(
             "optimizer", "regular_step_gradient_descent"
         )
+        default_optimizer_type = "regular_step_gradient_descent"
+        if "optimizer" in self.parameters:
+            print(
+                "WARNING: Please specify the 'optimizer' under the 'optimizer_parameters' key using 'type'."
+            )
+            default_optimizer_type = self.parameters["optimizer"]
 
         # this is taken directly from the sample_config.yaml
         default_optimizer_parameters = {
+            "type": default_optimizer_type,
             "min_step": 1e-6,  # regular_step_gradient_descent
             "max_step": 1.0,  # gradient_descent, regular_step_gradient_descent
             "maximumStepSizeInPhysicalUnits": 1.0,  # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent,

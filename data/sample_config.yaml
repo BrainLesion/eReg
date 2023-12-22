@@ -1,23 +1,18 @@
 # Whether to use bias correction before registration (helpful to generate more accurate transforms at the cost of time). Default: false
 bias: false
 
-# The registration metric. Options: ["mattes_mutual_information", "ants_neighborhood_correlation", "correlation", "demons", "joint_histogram_mutual_information", "mean_squares"]
-# this can be a list as well, which will then become a multi-metric registration using composite transforms [https://simpleitk.org/doxygen/latest/html/classitk_1_1simple_1_1CompositeTransform.html]
-metric: mattes
-
 ## metric-specific parameters
 metric_parameters: {
+  type: "mean_squares", # Options: ["mattes_mutual_information", "ants_neighborhood_correlation", "correlation", "demons", "joint_histogram_mutual_information", "mean_squares"]
   histogram_bins: 50, # mattes_mutual_information, joint_histogram_mutual_information
   radius: 5, # ants_neighborhood_correlation
   intensityDifferenceThreshold: 0.001, # demons
   varianceForJointPDFSmoothing: 1.5, # joint_histogram_mutual_information
 }
 
-# Optimizer. Options: ["gradient_descent", "regular_step_gradient_descent", "amoeba", "conjugate", "exhaustive", "gadient_descent_line_search", "lbfgsb", "lbfgsb2", "one_plus_one_evolutionary", "powell"]
-optimizer: regular_step_gradient_descent
-
 ## optimizer-specific parameters
 optimizer_parameters: {
+  type: "regular_step_gradient_descent", # Options: ["gradient_descent", "regular_step_gradient_descent", "amoeba", "conjugate", "exhaustive", "gadient_descent_line_search", "lbfgsb", "lbfgsb2", "one_plus_one_evolutionary", "powell"]
   min_step: 1e-6, # regular_step_gradient_descent
   max_step: 1.0, # gradient_descent, regular_step_gradient_descent
   iterations: 1000, # regular_step_gradient_descent, gradient_descent_line_search, gradient_descent, conjugate, lbfgsb, lbfgsb2
