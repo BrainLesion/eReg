@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 from typing import Union
 
 import numpy as np
@@ -72,11 +73,9 @@ class RegistrationClass:
             self.parameters = self._generate_default_parameters()
 
     def _generate_default_parameters(self) -> dict:
-        defaults_file = os.path.normpath(
-            os.path.abspath(
-                __file__ + "configurations/default_rigid.yaml",
-            )
-        )
+        python_file_path = Path(os.path.normpath(os.path.abspath(__file__)))
+
+        defaults_file = python_file_path.parent / "configurations/default_rigid.yaml"
         default_parameters = self.parameters = yaml.safe_load(open(defaults_file, "r"))
         return default_parameters
 

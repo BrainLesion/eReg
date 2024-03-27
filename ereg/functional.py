@@ -3,7 +3,7 @@ from typing import Union
 
 import SimpleITK as sitk
 
-from ereg import RegistrationClass
+from ereg.registration import RegistrationClass
 
 
 def registration_function(
