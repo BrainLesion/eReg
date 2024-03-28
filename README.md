@@ -66,25 +66,11 @@ options:
 ```
 
 ### Pythonic Interface
-
-The Pythonic interface is available via the `ereg` package, and can be used in two ways: as a functional interface or as an object-oriented interface.
-
-#### Functional Interface
-
-```python
-from ereg import registration_function
-
-ssim = registration_function(
-    target_image=target_image_file, # the target image, which can be either a file or SimpleITK.Image object
-    moving_image=moving_image_file, # the moving image, which can be either a file or SimpleITK.Image object
-    output_image=output_file, # the output image to save the registered image to
-    transform_file=transform_file, # the transform file to save the transform to; if already present, will use this transform instead of computing a new one
-    log_file=log_file, # the log file to write to
-    configuration=configuration_file, # the configuration file to use to customize the registration, and is optional
-)
-```
+The `ereg` package provides two Python interfaces, an object-oriented interface, as well as convenience functions.
 
 #### Object-Oriented Interface
+
+The `register` method represents the core-of the object-oriented interface:
 
 ```python
 from ereg.registration import RegistrationClass
@@ -99,6 +85,37 @@ registration_obj.register(
 )
 ```
 
+Further, a resample method is available for explicitly calling transformations:
+```python
+registration_obj.resample_image(
+    target_image=target_image_file,
+    moving_image=moving_image_file,
+    output_image=output_file,
+    transform_file=transform_file,
+    log_file=log_file,
+)
+```
+
+
+#### Functional Interface
+
+Additionally, eReg provides functional wrappers for convenience.
+
+```python
+from ereg import registration_function
+
+ssim = registration_function(
+    target_image=target_image_file, # the target image, which can be either a file or SimpleITK.Image object
+    moving_image=moving_image_file, # the moving image, which can be either a file or SimpleITK.Image object
+    output_image=output_file, # the output image to save the registered image to
+    transform_file=transform_file, # the transform file to save the transform to; if already present, will use this transform instead of computing a new one
+    log_file=log_file, # the log file to write to
+    configuration=configuration_file, # the configuration file to use to customize the registration, and is optional
+)
+```
+
 ## Customization
 
-eReg can be customized using a configuration file. The configuration file is a YAML file that contains the parameters for the registration. The default configuration file is present [here](https://github.com/BrainLesion/eReg/blob/main/ereg/configurations/sample_config.yaml). More details on the parameters and their options can be found in the configuration file itself.
+eReg's registration and transformation parameters can be customized using a configuration file. The configuration file is a YAML file that contains the parameters for the registration. The default configuration file is present [here](https://github.com/BrainLesion/eReg/blob/main/ereg/configurations/sample_config.yaml). More details on the parameters and their options can be found in the configuration file itself.
+
+<!-- ## Citation TODO -->
