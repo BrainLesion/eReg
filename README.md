@@ -99,4 +99,6 @@ registration_obj.register(
 )
 ```
 
-## TODO
+## Customization
+
+eReg can be customized using a configuration file. The configuration file is a YAML file that contains the parameters for the registration. The default configuration file is present [here](https://github.com/BrainLesion/eReg/blob/main/ereg/configurations/sample_config.yaml). More details on the parameters and their options can be found in the configuration file itself.
