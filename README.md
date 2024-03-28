@@ -1,4 +1,10 @@
-# eReg
+# eReg - A Simple Registration Tool
+
+## Need
+
+Because of security concerns, users in clinical environments do not have access to virtualization and containerization technologies such as Docker and Singularity. This becomes a problem, because most research code (especially for image registration) is built around the need to have access to these technologies. Alternatively, some tools only work on a Linux environment, or they need specific hardware resources (such as a DL accelerator card), which are not always available in clinical settings.
+
+eReg is a simple registration tool that can be used in clinical environments without the need for virtualization or containerization technologies. And it works on all platforms across various hardware configurations.
 
 ## Installation
 
