@@ -107,7 +107,7 @@ class RegistrationClass:
             config_data = configuration
         else:
             raise ValueError(
-                "Configuration must be a string path pointing to a .yml file or dictionary."
+                "Configuration must be a string path pointing to a yaml/yml file or dictionary."
             )
 
         # Update only the keys present in the YAML file
@@ -294,8 +294,10 @@ class RegistrationClass:
             else:
                 return eval("sitk.Euler%dDTransform()" % (dim))
         elif transform_wrap == "scaleversor":
+            assert dim == 3, "ScaleVersor only works for 3D images."
             return sitk.ScaleVersor3DTransform()
         elif transform_wrap == "scaleskewversor":
+            assert dim == 3, "ScaleSkewVersor only works for 3D images."
             return sitk.ScaleSkewVersor3DTransform()
         # transforms that have specifically defined dimensions
         elif transform_wrap == "euler":
