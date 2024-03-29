@@ -4,11 +4,11 @@
 
 Because of security concerns, users in clinical environments do not have access to virtualization and containerization technologies such as Docker and Singularity. This becomes a problem, because most research code (especially for image registration) is built around the need to have access to these technologies. Alternatively, some tools only work on a Linux environment, or they need specific hardware resources (such as a DL accelerator card), which are not always available in clinical settings.
 
-eReg is a simple registration tool that can be used in clinical environments without the need for virtualization or containerization technologies. It supports most platforms across various hardware configurations.
+**eReg** is a simple registration tool that can be used in clinical environments without the need for virtualization or containerization technologies. It supports most platforms across various hardware configurations.
 
 ## Installation
 
-With a Python 3.8+ environment, you can install eReg from [pypi.org](https://pypi.org/project/eReg/).
+With a Python 3.8+ environment, you can install **eReg** from [pypi.org](https://pypi.org/project/eReg/).
 
 1. Create a virtual environment
 
@@ -32,7 +32,7 @@ pip install ereg
 
 ## Extending eReg
 
-To extend eReg, you first need to install eReg from source. Clone the repository and install the package:
+To extend eReg, you first need to install **eReg** from source. Clone the repository and install the package:
 
 ```sh
 git clone https://github.com/BrainLesion/eReg.git
@@ -42,7 +42,7 @@ pip install -e .
 
 ## Usage
 
-eReg can be used via the command line or as a Python package. 
+**eReg** can be used via the command line or as a Python package. 
 
 ### Command Line Interface
 
@@ -99,7 +99,7 @@ registration_obj.resample_image(
 
 #### Functional Interface
 
-Additionally, eReg provides functional wrappers for convenience.
+Additionally, **eReg** provides functional wrappers for convenience.
 
 ```python
 from ereg import registration_function
