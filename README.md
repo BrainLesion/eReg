@@ -85,7 +85,8 @@ registration_obj.register(
 )
 ```
 
-Further, a resample method is available for explicitly calling transformations:
+Further, a resample method is available to use previously computed transforms to resample a moving image:
+
 ```python
 registration_obj.resample_image(
     target_image=target_image_file,
