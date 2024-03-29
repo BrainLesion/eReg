@@ -220,7 +220,7 @@ class RegistrationClass:
         transform_file: str = None,
         log_file: str = None,
         **kwargs,
-    ) -> None:
+    ) -> float:
         """
         Resample the moving image to the target image.
 
@@ -268,6 +268,8 @@ class RegistrationClass:
                     f"SSIM score of moving against target image: {self.ssim_score}"
                 )
                 logging.shutdown()
+
+                return self.ssim_score
 
     def _get_transform_wrapper(self, transform: str, dim: int) -> sitk.Transform:
         """
