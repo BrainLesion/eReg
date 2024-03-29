@@ -30,16 +30,6 @@ source venv_ereg/bin/activate ## using native python venv
 pip install ereg
 ```
 
-## Extending eReg
-
-To extend eReg, you first need to install **eReg** from source. Clone the repository and install the package:
-
-```sh
-git clone https://github.com/BrainLesion/eReg.git
-cd eReg
-pip install -e .
-```
-
 ## Usage
 
 **eReg** can be used via the command line or as a Python package. 
@@ -118,5 +108,16 @@ ssim = registration_function(
 ## Customization
 
 eReg's registration and transformation parameters can be customized using a configuration file. The configuration file is a YAML file that contains the parameters for the registration. The default configuration file is present [here](https://github.com/BrainLesion/eReg/blob/main/ereg/configurations/sample_config.yaml). More details on the parameters and their options can be found in the configuration file itself.
+
+
+## Extending eReg
+
+To extend eReg, you first need to install **eReg** from source. Clone the repository and install the package:
+
+```sh
+git clone https://github.com/BrainLesion/eReg.git
+cd eReg
+pip install -e .
+```
 
 <!-- ## Citation TODO -->
