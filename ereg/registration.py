@@ -150,7 +150,7 @@ class RegistrationClass:
         target_image = read_image_and_cast_to_32bit_float(target_image)
         moving_image = read_image_and_cast_to_32bit_float(moving_image)
 
-        if self.parameters["bias_correct"]:
+        if self.parameters.get("bias"):
             self.logger.info("Bias correcting images.")
             target_image = self._bias_correct_image(target_image)
             moving_image = self._bias_correct_image(moving_image)
