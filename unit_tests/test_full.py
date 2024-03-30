@@ -89,7 +89,7 @@ def test_registration_function():
         tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
     )
     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
-    test_config = {"initialization": "moments"}
+    test_config = {"initialization": "moments", "bias": True}
     registration_function(
         target_image=atlas_sri,
         moving_image=moving_image,
