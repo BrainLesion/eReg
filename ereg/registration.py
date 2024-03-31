@@ -452,7 +452,7 @@ class RegistrationClass:
                 self.parameters.get("sampling_strategy", "random").lower()
             ]
         )
-        R.SetMetricSamplingPercentagePerLevel(
+        R.SetMetricSamplingPercentage(
             self.parameters.get("sampling_percentage", 0.01)
         )
 
