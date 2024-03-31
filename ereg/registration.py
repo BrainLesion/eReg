@@ -393,7 +393,9 @@ class RegistrationClass:
 
         self.logger.info("Initializing registration.")
         R = sitk.ImageRegistrationMethod()
-        self.parameters["metric_parameters"] = self.parameters.get("metric_parameters", {})
+        self.parameters["metric_parameters"] = self.parameters.get(
+            "metric_parameters", {}
+        )
         metric = (
             self.parameters["metric_parameters"].get("type", "mean_squares").lower()
         )
@@ -450,7 +452,9 @@ class RegistrationClass:
                 self.parameters.get("sampling_strategy", "random").lower()
             ]
         )
-        R.SetMetricSamplingPercentagePerLevel(self.parameters.get("sampling_percentage", 0.01)))
+        R.SetMetricSamplingPercentagePerLevel(
+            self.parameters.get("sampling_percentage", 0.01)
+        )
 
         self.parameters["optimizer_parameters"] = self.parameters.get(
             "optimizer_parameters", {}
