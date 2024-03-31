@@ -389,7 +389,9 @@ class RegistrationClass:
 
         self.logger.info("Initializing registration.")
         R = sitk.ImageRegistrationMethod()
-        metric = self.parameters["metric"].lower()
+        metric = (
+            self.parameters["metric_parameters"].get("type", "mean_squares").lower()
+        )
         if (
             (metric == "mattesmutualinformation")
             or (metric == "mattes")
@@ -397,9 +399,9 @@ class RegistrationClass:
             or ("mattes" in metric)
         ):
             R.SetMetricAsMattesMutualInformation(
-                numberOfHistogramBins=self.parameters["metric_parameters"][
-                    "histogram_bins"
-                ]
+                numberOfHistogramBins=self.parameters["metric_parameters"].get(
+                    "histogram_bins", 50
+                ),
             )
         elif (
             (metric == "antsneighborhoodcorrelation")
@@ -407,15 +409,15 @@ class RegistrationClass:
             or ("ants" in metric)
         ):
             R.SetMetricAsANTSNeighborhoodCorrelation(
-                radius=self.parameters["metric_parameters"]["radius"]
+                radius=self.parameters["metric_parameters"].get("radius", 5)
             )
         elif metric == "correlation":
             R.SetMetricAsCorrelation()
         elif metric == "demons":
             R.SetMetricAsDemons(
-                intensityDifferenceThreshold=self.parameters["metric_parameters"][
-                    "intensityDifferenceThreshold"
-                ]
+                intensityDifferenceThreshold=self.parameters["metric_parameters"].get(
+                    "intensityDifferenceThreshold", 0.001
+                ),
             )
         elif (
             (metric == "joint_histogram_mutual_information")
@@ -423,12 +425,12 @@ class RegistrationClass:
             or ("joint" in metric)
         ):
             R.SetMetricAsJointHistogramMutualInformation(
-                numberOfHistogramBins=self.parameters["metric_parameters"][
-                    "histogram_bins"
-                ],
-                varianceForJointPDFSmoothing=self.parameters["metric_parameters"][
-                    "varianceForJointPDFSmoothing"
-                ],
+                numberOfHistogramBins=self.parameters["metric_parameters"].get(
+                    "histogram_bins", 50
+                ),
+                varianceForJointPDFSmoothing=self.parameters["metric_parameters"].get(
+                    "varianceForJointPDFSmoothing", 1.5
+                ),
             )
         else:
             R.SetMetricAsMeanSquares()
@@ -439,197 +441,243 @@ class RegistrationClass:
             "none": R.NONE,
         }
         R.SetMetricSamplingStrategy(
-            sampling_strategy_parsed[self.parameters["sampling_strategy"]]
+            sampling_strategy_parsed[
+                self.parameters.get("sampling_strategy", "random").lower()
+            ]
         )
         R.SetMetricSamplingPercentagePerLevel(self.parameters["sampling_percentage"])
 
-        if self.parameters["optimizer"] == "regular_step_gradient_descent":
+        self.parameters["optimizer_parameters"] = self.parameters.get(
+            "optimizer_parameters", {}
+        )
+        if (
+            self.parameters["optimizer_parameters"].get("type").lower()
+            == "regular_step_gradient_descent"
+        ):
             R.SetOptimizerAsRegularStepGradientDescent(
-                minStep=self.parameters["optimizer_parameters"]["min_step"],
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                learningRate=self.parameters["optimizer_parameters"]["learningrate"],
-                # gradientMagnitudeTolerance=grad_tolerance,
-                relaxationFactor=self.parameters["optimizer_parameters"]["relaxation"],
-                gradientMagnitudeTolerance=self.parameters["optimizer_parameters"][
-                    "tolerance"
-                ],
+                minStep=self.parameters["optimizer_parameters"].get("min_step", 1e-6),
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                learningRate=self.parameters["optimizer_parameters"].get(
+                    "learningrate", 2.0
+                ),
+                relaxationFactor=self.parameters["optimizer_parameters"].get(
+                    "relaxation", 0.5
+                ),
+                gradientMagnitudeTolerance=self.parameters["optimizer_parameters"].get(
+                    "tolerance", 1e-4
+                ),
                 estimateLearningRate=R.EachIteration,
-                maximumStepSizeInPhysicalUnits=self.parameters["optimizer_parameters"][
-                    "max_step"
-                ]
-                * physical_units,
-            )
-        elif self.parameters["optimizer"] == "gradient_descent":
-            R.SetOptimizerAsGradientDescent(
-                learningRate=self.parameters["optimizer_parameters"]["learningrate"],
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                convergenceMinimumValue=self.parameters["optimizer_parameters"][
-                    "convergence_minimum"
-                ],
-                convergenceWindowSize=self.parameters["optimizer_parameters"][
-                    "convergence_window_size"
-                ],
-                estimateLearningRate=R.EachIteration,
-                maximumStepSizeInPhysicalUnits=self.parameters["optimizer_parameters"][
-                    "max_step"
-                ]
-                * physical_units,
-            )
-        elif self.parameters["optimizer"] == "gradient_descent_line_search":
-            R.SetOptimizerAsGradientDescentLineSearch(
-                learningRate=self.parameters["optimizer_parameters"]["learningrate"],
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                convergenceMinimumValue=self.parameters["optimizer_parameters"][
-                    "convergence_minimum"
-                ],
-                convergenceWindowSize=self.parameters["optimizer_parameters"][
-                    "convergence_window_size"
-                ],
-                lineSearchLowerLimit=self.parameters["optimizer_parameters"][
-                    "line_search_lower_limit"
-                ],
-                lineSearchUpperLimit=self.parameters["optimizer_parameters"][
-                    "line_search_upper_limit"
-                ],
-                lineSearchEpsilon=self.parameters["optimizer_parameters"][
-                    "line_search_epsilon"
-                ],
-                lineSearchMaximumIterations=self.parameters["optimizer_parameters"][
-                    "line_search_maximum_iterations"
-                ],
-                estimateLearningRate=R.EachIteration,
-                maximumStepSizeInPhysicalUnits=self.parameters["optimizer_parameters"][
-                    "max_step"
-                ]
+                maximumStepSizeInPhysicalUnits=self.parameters[
+                    "optimizer_parameters"
+                ].get("max_step", 1.0)
                 * physical_units,
             )
         elif (
-            self.parameters["optimizer"]
+            self.parameters["optimizer_parameters"].get("type").lower()
+            == "gradient_descent"
+        ):
+            R.SetOptimizerAsGradientDescent(
+                learningRate=self.parameters["optimizer_parameters"].get(
+                    "learningrate", 1.0
+                ),
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                convergenceMinimumValue=self.parameters["optimizer_parameters"].get(
+                    "convergence_minimum", 1e-6
+                ),
+                convergenceWindowSize=self.parameters["optimizer_parameters"].get(
+                    "convergence_window_size", 10
+                ),
+                estimateLearningRate=R.EachIteration,
+                maximumStepSizeInPhysicalUnits=self.parameters[
+                    "optimizer_parameters"
+                ].get("max_step", 1.0)
+                * physical_units,
+            )
+        elif (
+            self.parameters["optimizer_parameters"].get("type").lower()
+            == "gradient_descent_line_search"
+        ):
+            R.SetOptimizerAsGradientDescentLineSearch(
+                learningRate=self.parameters["optimizer_parameters"].get(
+                    "learningrate", 1.0
+                ),
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                convergenceMinimumValue=self.parameters["optimizer_parameters"].get(
+                    "convergence_minimum", 1e-6
+                ),
+                convergenceWindowSize=self.parameters["optimizer_parameters"].get(
+                    "convergence_window_size", 10
+                ),
+                lineSearchLowerLimit=self.parameters["optimizer_parameters"].get(
+                    "line_search_lower_limit", 0.0
+                ),
+                lineSearchUpperLimit=self.parameters["optimizer_parameters"].get(
+                    "line_search_upper_limit", 1.0
+                ),
+                lineSearchEpsilon=self.parameters["optimizer_parameters"].get(
+                    "line_search_epsilon", 0.01
+                ),
+                lineSearchMaximumIterations=self.parameters["optimizer_parameters"].get(
+                    "line_search_maximum_iterations", 20
+                ),
+                estimateLearningRate=R.EachIteration,
+                maximumStepSizeInPhysicalUnits=self.parameters[
+                    "optimizer_parameters"
+                ].get("max_step", 1.0)
+                * physical_units,
+            )
+        elif (
+            self.parameters["optimizer_parameters"].get("type").lower()
             == "Conjugate_step_gradient_descent_line_search"
         ):
             R.SetOptimizerAsConjugateGradientLineSearch(
-                learningRate=self.parameters["optimizer_parameters"]["learningrate"],
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                convergenceMinimumValue=self.parameters["optimizer_parameters"][
-                    "convergence_minimum"
-                ],
-                convergenceWindowSize=self.parameters["optimizer_parameters"][
-                    "convergence_window_size"
-                ],
-                lineSearchLowerLimit=self.parameters["optimizer_parameters"][
-                    "line_search_lower_limit"
-                ],
-                lineSearchUpperLimit=self.parameters["optimizer_parameters"][
-                    "line_search_upper_limit"
-                ],
-                lineSearchEpsilon=self.parameters["optimizer_parameters"][
-                    "line_search_epsilon"
-                ],
-                lineSearchMaximumIterations=self.parameters["optimizer_parameters"][
-                    "line_search_maximum_iterations"
-                ],
+                learningRate=self.parameters["optimizer_parameters"].get(
+                    "learningrate", 1.0
+                ),
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                convergenceMinimumValue=self.parameters["optimizer_parameters"].get(
+                    "convergence_minimum", 1e-6
+                ),
+                convergenceWindowSize=self.parameters["optimizer_parameters"].get(
+                    "convergence_window_size", 10
+                ),
+                lineSearchLowerLimit=self.parameters["optimizer_parameters"].get(
+                    "line_search_lower_limit", 0.0
+                ),
+                lineSearchUpperLimit=self.parameters["optimizer_parameters"].get(
+                    "line_search_upper_limit", 1.0
+                ),
+                lineSearchEpsilon=self.parameters["optimizer_parameters"].get(
+                    "line_search_epsilon", 0.01
+                ),
+                lineSearchMaximumIterations=self.parameters["optimizer_parameters"].get(
+                    "line_search_maximum_iterations", 20
+                ),
                 estimateLearningRate=R.EachIteration,
-                maximumStepSizeInPhysicalUnits=self.parameters["optimizer_parameters"][
-                    "max_step"
-                ]
+                maximumStepSizeInPhysicalUnits=self.parameters[
+                    "optimizer_parameters"
+                ].get("max_step", 1.0)
                 * physical_units,
             )
-        elif self.parameters["optimizer"] == "exhaustive":
+        elif (
+            self.parameters["optimizer_parameters"].get("type").lower() == "exhaustive"
+        ):
             R.SetOptimizerAsExhaustive(
-                numberOfSteps=self.parameters["optimizer_parameters"]["iterations"],
-                stepLength=self.parameters["optimizer_parameters"]["step_length"],
+                numberOfSteps=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                stepLength=self.parameters["optimizer_parameters"].get(
+                    "step_length", 0.1
+                ),
             )
-        elif self.parameters["optimizer"] == "amoeba":
+        elif self.parameters["optimizer_parameters"].get("type").lower() == "amoeba":
             R.SetOptimizerAsAmoeba(
                 numberOfIterations=self.parameters["optimizer_parameters"][
                     "iterations"
                 ],
                 simplexDelta=self.parameters["optimizer_parameters"]["simplex_delta"],
             )
-        elif self.parameters["optimizer"] == "lbfgsb":
+        elif self.parameters["optimizer_parameters"].get("type").lower() == "lbfgsb":
             R.SetOptimizerAsLBFGSB(
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                maximumNumberOfCorrections=self.parameters["optimizer_parameters"][
-                    "maximum_number_of_corrections"
-                ],
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                maximumNumberOfCorrections=self.parameters["optimizer_parameters"].get(
+                    "maximum_number_of_corrections", 5
+                ),
                 maximumNumberOfFunctionEvaluations=self.parameters[
                     "optimizer_parameters"
-                ]["maximum_number_of_function_evaluations"],
-                costFunctionConvergenceFactor=self.parameters["optimizer_parameters"][
-                    "cost_function_convergence_factor"
-                ],
+                ].get("maximum_number_of_function_evaluations", 2000),
+                costFunctionConvergenceFactor=self.parameters[
+                    "optimizer_parameters"
+                ].get("cost_function_convergence_factor", 1e7),
             )
-        elif self.parameters["optimizer"] == "lbfgs2":
+        elif self.parameters["optimizer_parameters"].get("type").lower() == "lbfgs2":
             R.SetOptimizerAsLBFGS2(
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                solutionAccuracy=self.parameters["optimizer_parameters"][
-                    "solution_accuracy"
-                ],
-                hessianApproximateAccuracy=self.parameters["optimizer_parameters"][
-                    "hessian_approximate_accuracy"
-                ],
-                deltaConvergenceDistance=self.parameters["optimizer_parameters"][
-                    "delta_convergence_distance"
-                ],
-                deltaConvergenceTolerance=self.parameters["optimizer_parameters"][
-                    "delta_convergence_tolerance"
-                ],
-                lineSearchMaximumEvaluations=self.parameters["optimizer_parameters"][
-                    "line_search_maximum_evaluations"
-                ],
-                lineSearchMinimumStep=self.parameters["optimizer_parameters"][
-                    "line_search_minimum_step"
-                ],
-                lineSearchMaximumStep=self.parameters["optimizer_parameters"][
-                    "line_search_maximum_step"
-                ],
-                lineSearchAccuracy=self.parameters["optimizer_parameters"][
-                    "line_search_accuracy"
-                ],
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                solutionAccuracy=self.parameters["optimizer_parameters"].get(
+                    "solution_accuracy", 1e-7
+                ),
+                hessianApproximateAccuracy=self.parameters["optimizer_parameters"].get(
+                    "hessian_approximate_accuracy", 1e-7
+                ),
+                deltaConvergenceDistance=self.parameters["optimizer_parameters"].get(
+                    "delta_convergence_distance", 1e-5
+                ),
+                deltaConvergenceTolerance=self.parameters["optimizer_parameters"].get(
+                    "delta_convergence_tolerance", 1e-4
+                ),
+                lineSearchMaximumEvaluations=self.parameters[
+                    "optimizer_parameters"
+                ].get("line_search_maximum_evaluations", 20),
+                lineSearchMinimumStep=self.parameters["optimizer_parameters"].get(
+                    "line_search_minimum_step", 1e-20
+                ),
+                lineSearchMaximumStep=self.parameters["optimizer_parameters"].get(
+                    "line_search_maximum_step", 1e20
+                ),
+                lineSearchAccuracy=self.parameters["optimizer_parameters"].get(
+                    "line_search_accuracy", 0.9
+                ),
             )
-        elif self.parameters["optimizer"] == "one_plus_one_evolutionary":
+        elif (
+            self.parameters["optimizer_parameters"].get("type").lower()
+            == "one_plus_one_evolutionary"
+        ):
             R.SetOptimizerAsOnePlusOneEvolutionary(
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                epsilon=self.parameters["optimizer_parameters"]["epsilon"],
-                initialRadius=self.parameters["optimizer_parameters"]["initial_radius"],
-                growthFactor=self.parameters["optimizer_parameters"]["growth_factor"],
-                shrinkFactor=self.parameters["optimizer_parameters"]["shrink_factor"],
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                epsilon=self.parameters["optimizer_parameters"].get("epsilon", 1e-6),
+                initialRadius=self.parameters["optimizer_parameters"].get(
+                    "initial_radius", 1.0
+                ),
+                growthFactor=self.parameters["optimizer_parameters"].get(
+                    "growth_factor", 2.0
+                ),
+                shrinkFactor=self.parameters["optimizer_parameters"].get(
+                    "shrink_factor", 0.7
+                ),
             )
-        elif self.parameters["optimizer"] == "powell":
+        elif self.parameters["optimizer_parameters"].get("type").lower() == "powell":
             R.SetOptimizerAsPowell(
-                numberOfIterations=self.parameters["optimizer_parameters"][
-                    "iterations"
-                ],
-                maximumLineIterations=self.parameters["optimizer_parameters"][
-                    "maximum_line_iterations"
-                ],
-                stepLength=self.parameters["optimizer_parameters"]["step_length"],
-                stepTolerance=self.parameters["optimizer_parameters"]["step_tolerance"],
-                valueTolerance=self.parameters["optimizer_parameters"][
-                    "value_tolerance"
-                ],
+                numberOfIterations=self.parameters["optimizer_parameters"].get(
+                    "iterations", 200
+                ),
+                maximumLineIterations=self.parameters["optimizer_parameters"].get(
+                    "maximum_line_iterations", 20
+                ),
+                stepLength=self.parameters["optimizer_parameters"].get(
+                    "step_length", 1.0
+                ),
+                stepTolerance=self.parameters["optimizer_parameters"].get(
+                    "step_tolerance", 0.001
+                ),
+                valueTolerance=self.parameters["optimizer_parameters"].get(
+                    "value_tolerance", 0.001
+                ),
             )
 
         # R.SetOptimizerScalesFromJacobian()
         R.SetOptimizerScalesFromPhysicalShift()
 
-        R.SetShrinkFactorsPerLevel(self.parameters["shrink_factors"])
-        R.SetSmoothingSigmasPerLevel(self.parameters["smoothing_sigmas"])
+        R.SetShrinkFactorsPerLevel(self.parameters.get("shrink_factors", [8, 4, 2]))
+        R.SetSmoothingSigmasPerLevel(self.parameters.get("smoothing_sigmas", [3, 2, 1]))
         R.SmoothingSigmasAreSpecifiedInPhysicalUnitsOn()
+
+        assert (
+            self.parameters.get("transform", "") in self.available_transforms
+        ), f"`transform`needs to be set to one of the following: {self.available_transforms}"
         transform_function = self._get_transform_wrapper(
             self.parameters["transform"], dimension
         )
@@ -658,6 +706,7 @@ class RegistrationClass:
         #         self.initialization_type.get(initialization.lower(), "geometry"),
         #     )
 
+        self.parameters["initialization"] = self.parameters.get("initialization", None)
         if self.parameters["initialization"] is not None:
             temp_moving = moving_image
             temp_initialization = self.parameters["initialization"].upper()
