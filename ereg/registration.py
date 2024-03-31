@@ -452,9 +452,11 @@ class RegistrationClass:
                 self.parameters.get("sampling_strategy", "random").lower()
             ]
         )
-        R.SetMetricSamplingPercentage(
-            self.parameters.get("sampling_percentage", 0.01)
-        )
+        sampling_rate = self.parameters.get("sampling_percentage", 0.01)
+        if isinstance(sampling_rate, float):
+            R.SetMetricSamplingPercentage(sampling_rate)
+        elif type(sampling_rate) in [np.ndarray, list]:
+            R.SetMetricSamplingPercentagePerLevel(sampling_rate)
 
         self.parameters["optimizer_parameters"] = self.parameters.get(
             "optimizer_parameters", {}
