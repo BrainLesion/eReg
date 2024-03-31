@@ -179,6 +179,9 @@ class RegistrationClass:
             sitk.WriteTransform(self.transform, transform_file)
 
         # apply composite transform if provided
+        self.parameters["composite_transform"] = self.parameters.get(
+            "composite_transform", None
+        )
         if self.parameters["composite_transform"] is not None:
             self.logger.info("Applying composite transform.")
             transform_composite = sitk.ReadTransform(
@@ -256,7 +259,8 @@ class RegistrationClass:
                 resampler = sitk.ResampleImageFilter()
                 resampler.SetReferenceImage(target_image)
                 interpolator_type = self.interpolator_type.get(
-                    self.parameters["interpolator"]
+                    self.parameters.get("interpolator", "linear").lower(),
+                    sitk.sitkLinear,
                 )
                 resampler.SetInterpolator(interpolator_type)
                 resampler.SetDefaultPixelValue(0)
@@ -389,6 +393,7 @@ class RegistrationClass:
 
         self.logger.info("Initializing registration.")
         R = sitk.ImageRegistrationMethod()
+        self.parameters["metric_parameters"] = self.parameters.get("metric_parameters", {})
         metric = (
             self.parameters["metric_parameters"].get("type", "mean_squares").lower()
         )
@@ -445,7 +450,7 @@ class RegistrationClass:
                 self.parameters.get("sampling_strategy", "random").lower()
             ]
         )
-        R.SetMetricSamplingPercentagePerLevel(self.parameters["sampling_percentage"])
+        R.SetMetricSamplingPercentagePerLevel(self.parameters.get("sampling_percentage", 0.01)))
 
         self.parameters["optimizer_parameters"] = self.parameters.get(
             "optimizer_parameters", {}
