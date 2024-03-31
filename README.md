@@ -1,3 +1,7 @@
+[![PyPI version preprocessing](https://badge.fury.io/py/eReg.svg)](https://pypi.python.org/pypi/eReg/)
+[![Documentation Status](https://readthedocs.org/projects/ereg/badge/?version=latest)](http://ereg.readthedocs.io/?badge=latest)
+[![tests](https://github.com/BrainLesion/eReg/actions/workflows/tests.yml/badge.svg)](https://github.com/BrainLesion/eReg/actions/workflows/tests.yml)
+
 # eReg - A Simple Registration Tool
 
 ## Need
