@@ -1,8 +1,12 @@
-import os, tempfile, shutil, yaml
+import os
+import tempfile
 from pathlib import Path
 
+import yaml
+
 from ereg.cli.run import main
-from ereg.registration import RegistrationClass, registration_function
+from ereg.functional import registration_function
+from ereg.registration import RegistrationClass
 from ereg.utils.io import read_image_and_cast_to_32bit_float
 
 
