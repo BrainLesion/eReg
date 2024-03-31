@@ -60,7 +60,7 @@ options:
 ```
 
 ### Pythonic Interface
-The `ereg` package provides two Python interfaces, an object-oriented interface, as well as convenience functions.
+The `ereg` package provides two Python interfaces, an object-oriented interface, as well as convenience functions. A [Jupyter notebook tutorial](https://github.com/BrainLesion/tutorials/tree/main/eReg) is available to illustrate usage of the Python API.
 
 #### Object-Oriented Interface
 
