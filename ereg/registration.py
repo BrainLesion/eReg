@@ -392,7 +392,7 @@ class RegistrationClass:
             physical_units *= target_image.GetSpacing()[dim]
 
         self.logger.info("Initializing registration.")
-        R = sitk.ImageRegistrationMethod()
+        registration = sitk.ImageRegistrationMethod()
         self.parameters["metric_parameters"] = self.parameters.get(
             "metric_parameters", {}
         )
@@ -405,7 +405,7 @@ class RegistrationClass:
             or (metric == "mmi")
             or ("mattes" in metric)
         ):
-            R.SetMetricAsMattesMutualInformation(
+            registration.SetMetricAsMattesMutualInformation(
                 numberOfHistogramBins=self.parameters["metric_parameters"].get(
                     "histogram_bins", 50
                 ),
@@ -415,13 +415,13 @@ class RegistrationClass:
             or (metric == "ants")
             or ("ants" in metric)
         ):
-            R.SetMetricAsANTSNeighborhoodCorrelation(
+            registration.SetMetricAsANTSNeighborhoodCorrelation(
                 radius=self.parameters["metric_parameters"].get("radius", 5)
             )
         elif metric == "correlation":
-            R.SetMetricAsCorrelation()
+            registration.SetMetricAsCorrelation()
         elif metric == "demons":
-            R.SetMetricAsDemons(
+            registration.SetMetricAsDemons(
                 intensityDifferenceThreshold=self.parameters["metric_parameters"].get(
                     "intensityDifferenceThreshold", 0.001
                 ),
@@ -431,7 +431,7 @@ class RegistrationClass:
             or (metric == "joint")
             or ("joint" in metric)
         ):
-            R.SetMetricAsJointHistogramMutualInformation(
+            registration.SetMetricAsJointHistogramMutualInformation(
                 numberOfHistogramBins=self.parameters["metric_parameters"].get(
                     "histogram_bins", 50
                 ),
@@ -440,23 +440,23 @@ class RegistrationClass:
                 ),
             )
         else:
-            R.SetMetricAsMeanSquares()
+            registration.SetMetricAsMeanSquares()
 
         sampling_strategy_parsed = {
-            "random": R.RANDOM,
-            "regular": R.REGULAR,
-            "none": R.NONE,
+            "random": registration.RANDOM,
+            "regular": registration.REGULAR,
+            "none": registration.NONE,
         }
-        R.SetMetricSamplingStrategy(
+        registration.SetMetricSamplingStrategy(
             sampling_strategy_parsed[
                 self.parameters.get("sampling_strategy", "random").lower()
             ]
         )
         sampling_rate = self.parameters.get("sampling_percentage", 0.01)
         if isinstance(sampling_rate, float):
-            R.SetMetricSamplingPercentage(sampling_rate)
+            registration.SetMetricSamplingPercentage(sampling_rate)
         elif type(sampling_rate) in [np.ndarray, list]:
-            R.SetMetricSamplingPercentagePerLevel(sampling_rate)
+            registration.SetMetricSamplingPercentagePerLevel(sampling_rate)
 
         self.parameters["optimizer_parameters"] = self.parameters.get(
             "optimizer_parameters", {}
@@ -465,13 +465,13 @@ class RegistrationClass:
             self.parameters["optimizer_parameters"].get("type").lower()
             == "regular_step_gradient_descent"
         ):
-            R.SetOptimizerAsRegularStepGradientDescent(
+            registration.SetOptimizerAsRegularStepGradientDescent(
                 minStep=self.parameters["optimizer_parameters"].get("min_step", 1e-6),
                 numberOfIterations=self.parameters["optimizer_parameters"].get(
                     "iterations", 200
                 ),
                 learningRate=self.parameters["optimizer_parameters"].get(
-                    "learningrate", 2.0
+                    "learningrate", 1.0
                 ),
                 relaxationFactor=self.parameters["optimizer_parameters"].get(
                     "relaxation", 0.5
@@ -479,7 +479,7 @@ class RegistrationClass:
                 gradientMagnitudeTolerance=self.parameters["optimizer_parameters"].get(
                     "tolerance", 1e-4
                 ),
-                estimateLearningRate=R.EachIteration,
+                estimateLearningRate=registration.EachIteration,
                 maximumStepSizeInPhysicalUnits=self.parameters[
                     "optimizer_parameters"
                 ].get("max_step", 1.0)
@@ -489,7 +489,7 @@ class RegistrationClass:
             self.parameters["optimizer_parameters"].get("type").lower()
             == "gradient_descent"
         ):
-            R.SetOptimizerAsGradientDescent(
+            registration.SetOptimizerAsGradientDescent(
                 learningRate=self.parameters["optimizer_parameters"].get(
                     "learningrate", 1.0
                 ),
@@ -502,7 +502,7 @@ class RegistrationClass:
                 convergenceWindowSize=self.parameters["optimizer_parameters"].get(
                     "convergence_window_size", 10
                 ),
-                estimateLearningRate=R.EachIteration,
+                estimateLearningRate=registration.EachIteration,
                 maximumStepSizeInPhysicalUnits=self.parameters[
                     "optimizer_parameters"
                 ].get("max_step", 1.0)
@@ -512,7 +512,7 @@ class RegistrationClass:
             self.parameters["optimizer_parameters"].get("type").lower()
             == "gradient_descent_line_search"
         ):
-            R.SetOptimizerAsGradientDescentLineSearch(
+            registration.SetOptimizerAsGradientDescentLineSearch(
                 learningRate=self.parameters["optimizer_parameters"].get(
                     "learningrate", 1.0
                 ),
@@ -537,7 +537,7 @@ class RegistrationClass:
                 lineSearchMaximumIterations=self.parameters["optimizer_parameters"].get(
                     "line_search_maximum_iterations", 20
                 ),
-                estimateLearningRate=R.EachIteration,
+                estimateLearningRate=registration.EachIteration,
                 maximumStepSizeInPhysicalUnits=self.parameters[
                     "optimizer_parameters"
                 ].get("max_step", 1.0)
@@ -547,7 +547,7 @@ class RegistrationClass:
             self.parameters["optimizer_parameters"].get("type").lower()
             == "Conjugate_step_gradient_descent_line_search"
         ):
-            R.SetOptimizerAsConjugateGradientLineSearch(
+            registration.SetOptimizerAsConjugateGradientLineSearch(
                 learningRate=self.parameters["optimizer_parameters"].get(
                     "learningrate", 1.0
                 ),
@@ -572,7 +572,7 @@ class RegistrationClass:
                 lineSearchMaximumIterations=self.parameters["optimizer_parameters"].get(
                     "line_search_maximum_iterations", 20
                 ),
-                estimateLearningRate=R.EachIteration,
+                estimateLearningRate=registration.EachIteration,
                 maximumStepSizeInPhysicalUnits=self.parameters[
                     "optimizer_parameters"
                 ].get("max_step", 1.0)
@@ -581,7 +581,7 @@ class RegistrationClass:
         elif (
             self.parameters["optimizer_parameters"].get("type").lower() == "exhaustive"
         ):
-            R.SetOptimizerAsExhaustive(
+            registration.SetOptimizerAsExhaustive(
                 numberOfSteps=self.parameters["optimizer_parameters"].get(
                     "iterations", 200
                 ),
@@ -590,14 +590,14 @@ class RegistrationClass:
                 ),
             )
         elif self.parameters["optimizer_parameters"].get("type").lower() == "amoeba":
-            R.SetOptimizerAsAmoeba(
+            registration.SetOptimizerAsAmoeba(
                 numberOfIterations=self.parameters["optimizer_parameters"][
                     "iterations"
                 ],
                 simplexDelta=self.parameters["optimizer_parameters"]["simplex_delta"],
             )
         elif self.parameters["optimizer_parameters"].get("type").lower() == "lbfgsb":
-            R.SetOptimizerAsLBFGSB(
+            registration.SetOptimizerAsLBFGSB(
                 numberOfIterations=self.parameters["optimizer_parameters"].get(
                     "iterations", 200
                 ),
@@ -612,7 +612,7 @@ class RegistrationClass:
                 ].get("cost_function_convergence_factor", 1e7),
             )
         elif self.parameters["optimizer_parameters"].get("type").lower() == "lbfgs2":
-            R.SetOptimizerAsLBFGS2(
+            registration.SetOptimizerAsLBFGS2(
                 numberOfIterations=self.parameters["optimizer_parameters"].get(
                     "iterations", 200
                 ),
@@ -645,7 +645,7 @@ class RegistrationClass:
             self.parameters["optimizer_parameters"].get("type").lower()
             == "one_plus_one_evolutionary"
         ):
-            R.SetOptimizerAsOnePlusOneEvolutionary(
+            registration.SetOptimizerAsOnePlusOneEvolutionary(
                 numberOfIterations=self.parameters["optimizer_parameters"].get(
                     "iterations", 200
                 ),
@@ -661,7 +661,7 @@ class RegistrationClass:
                 ),
             )
         elif self.parameters["optimizer_parameters"].get("type").lower() == "powell":
-            R.SetOptimizerAsPowell(
+            registration.SetOptimizerAsPowell(
                 numberOfIterations=self.parameters["optimizer_parameters"].get(
                     "iterations", 200
                 ),
@@ -679,12 +679,12 @@ class RegistrationClass:
                 ),
             )
 
-        # R.SetOptimizerScalesFromJacobian()
-        R.SetOptimizerScalesFromPhysicalShift()
+        # registration.SetOptimizerScalesFromJacobian()
+        registration.SetOptimizerScalesFromPhysicalShift()
 
-        R.SetShrinkFactorsPerLevel(self.parameters.get("shrink_factors", [8, 4, 2]))
-        R.SetSmoothingSigmasPerLevel(self.parameters.get("smoothing_sigmas", [3, 2, 1]))
-        R.SmoothingSigmasAreSpecifiedInPhysicalUnitsOn()
+        registration.SetShrinkFactorsPerLevel(self.parameters.get("shrink_factors", [8, 4, 2]))
+        registration.SetSmoothingSigmasPerLevel(self.parameters.get("smoothing_sigmas", [3, 2, 1]))
+        registration.SmoothingSigmasAreSpecifiedInPhysicalUnitsOn()
 
         assert (
             self.parameters.get("transform", "") in self.available_transforms
@@ -738,17 +738,17 @@ class RegistrationClass:
                 transform_function,
                 eval("sitk.CenteredTransformInitializerFilter.%s" % (initializer_type)),
             )
-        R.SetInitialTransform(final_transform, inPlace=False)
+        registration.SetInitialTransform(final_transform, inPlace=False)
         ## set the interpolator - all options: https://simpleitk.org/doxygen/latest/html/namespaceitk_1_1simple.html#a7cb1ef8bd02c669c02ea2f9f5aa374e5
         # this should be linear to optimize results and computational efficacy
-        R.SetInterpolator(sitk.sitkLinear)
+        registration.SetInterpolator(sitk.sitkLinear)
 
-        # R.AddCommand(sitk.sitkIterationEvent, lambda: R)
+        # registration.AddCommand(sitk.sitkIterationEvent, lambda: R)
         self.logger.info("Starting registration.")
         output_transform = None
         for _ in range(self.parameters["attempts"]):
             try:
-                output_transform = R.Execute(target_image, moving_image)
+                output_transform = registration.Execute(target_image, moving_image)
                 break
             except RuntimeError as e:
                 self.logger.warning(
@@ -779,14 +779,14 @@ class RegistrationClass:
                 tmp.SetCenter(registration_transform_sitk.GetCenter())
                 registration_transform_sitk = tmp
         ## additional information
-        # print("Metric: ", R.MetricEvaluate(target_image, moving_image), flush=True)
+        # print("Metric: ", registration.MetricEvaluate(target_image, moving_image), flush=True)
         # print(
         #     "Optimizer stop condition: ",
-        #     R.GetOptimizerStopConditionDescription(),
+        #     registration.GetOptimizerStopConditionDescription(),
         #     flush=True,
         # )
-        # print("Number of iterations: ", R.GetOptimizerIteration(), flush=True)
-        # print("Final metric value: ", R.GetMetricValue(), flush=True)
+        # print("Number of iterations: ", registration.GetOptimizerIteration(), flush=True)
+        # print("Final metric value: ", registration.GetMetricValue(), flush=True)
 
         # if rigid_registration:
         #     if target_image.GetDimension() == 2:
