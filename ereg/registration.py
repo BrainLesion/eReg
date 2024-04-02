@@ -236,7 +236,7 @@ class RegistrationClass:
 
         # check if output image exists
         if not os.path.exists(output_image):
-            if self.transform is not None:
+            if transform_file is not None:
                 if log_file is None:
                     # TODO this will create trouble for non ".nii.gz" file
                     log_file = output_image.replace(".nii.gz", ".log")
@@ -247,6 +247,18 @@ class RegistrationClass:
                     level=logging.DEBUG,
                 )
                 self.logger = logging.getLogger("registration")
+
+                assert os.path.isfile(transform_file), "Transform file does not exist."
+                transform_from_file = None
+                try:
+                    transform_from_file = sitk.ReadTransform(transform_file)
+                    assert (
+                        transform_from_file is not None
+                    ), "Transform could not be read."
+                except Exception as e:
+                    self.logger.error(f"Could not read transform file: {e}")
+                    logging.shutdown()
+                    return None
 
                 self.logger.info(
                     f"Target image: {target_image}, Moving image: {moving_image}, Transform file: {transform_file}"
@@ -263,7 +275,7 @@ class RegistrationClass:
                 )
                 resampler.SetInterpolator(interpolator_type)
                 resampler.SetDefaultPixelValue(0)
-                resampler.SetTransform(self.transform)
+                resampler.SetTransform(transform_from_file)
                 output_image_struct = resampler.Execute(moving_image)
                 sitk.WriteImage(output_image_struct, output_image)
                 self.ssim_score = get_ssim(target_image, output_image_struct)
