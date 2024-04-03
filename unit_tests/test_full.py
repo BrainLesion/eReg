@@ -89,19 +89,21 @@ def test_registration_function():
     test_data_dir = (cwd / "data").absolute().as_posix()
     atlas_data_dir = (cwd / "atlases").absolute().as_posix()
     moving_image = os.path.join(test_data_dir, "tcia_aaac_t1ce.nii.gz")
-    output_image = os.path.join(
-        tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
-    )
+    temp_output_dir = tempfile.gettempdir()
+    output_image = os.path.join(temp_output_dir, "tcia_aaac_t1ce_registered.nii.gz")
     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
+    transform_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_transform.mat")
     test_config = {"initialization": "moments", "bias": True}
     registration_function(
         target_image=atlas_sri,
         moving_image=moving_image,
         output_image=output_image,
         config_file=test_config,
+        transform_file=transform_file,
     )
     _image_sanity_check(atlas_sri, output_image)
-    os.remove(output_image)
+    assert os.path.exists(transform_file), "Transform file not created."
+    os.rmdir(temp_output_dir)
 
 
 def test_bias():
