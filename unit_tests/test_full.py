@@ -101,7 +101,8 @@ def test_registration_function():
         transform_file=transform_file,
         log_file=log_file,
     )
-
+    
+    # checks
     _image_sanity_check(atlas_sri, output_image)
     assert os.path.exists(transform_file), "Transform file not created."
     assert os.path.exists(log_file), "Log file not created."
@@ -131,9 +132,13 @@ def test_resample_function():
         configuration=test_config,
         log_file=log_file,
     )
+    
+    # checks
     _image_sanity_check(atlas_sri, output_image)
     assert os.path.exists(log_file), "Log file not created."
-    for file_to_delete in [output_image, transform_file, log_file]:
+    
+    # cleanup
+    for file_to_delete in [output_image, log_file]:
         os.remove(file_to_delete)
 
 
