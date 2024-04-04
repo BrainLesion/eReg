@@ -4,27 +4,7 @@ from typing import Union
 import SimpleITK as sitk
 
 from ereg.registration import RegistrationClass
-
-
-def _initialize_configuration(configuration: Union[str, dict]) -> dict:
-    """
-    Initialize the configuration dictionary.
-
-    Args:
-        configuration (Union[str, dict]): The configuration file or dictionary.
-
-    Returns:
-        dict: The configuration dictionary.
-    """
-    if configuration is not None:
-        if isinstance(configuration, str):
-            assert os.path.isfile(configuration), "Config file does not exist."
-        elif isinstance(configuration, dict):
-            pass
-        else:
-            raise ValueError("Config file must be a string or dictionary.")
-
-    return configuration
+from ereg.utils import initialize_configuration
 
 
 def registration_function(
@@ -49,7 +29,7 @@ def registration_function(
     Returns:
         float: The structural similarity index.
     """
-    configuration = _initialize_configuration(configuration)
+    configuration = initialize_configuration(configuration)
 
     registration_obj = RegistrationClass(configuration)
     registration_obj.register(
@@ -87,7 +67,7 @@ def resample_function(
     Returns:
         float: The structural similarity index (SSIM) between the resampled image and the target image.
     """
-    configuration = _initialize_configuration(configuration)
+    configuration = initialize_configuration(configuration)
 
     registration_obj = RegistrationClass(configuration)
 

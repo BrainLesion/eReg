@@ -10,7 +10,7 @@ import numpy as np
 import SimpleITK as sitk
 import yaml
 
-from ereg.utils.io import read_image_and_cast_to_32bit_float
+from ereg.utils.io import read_image_and_cast_to_32bit_float, initialize_configuration
 from ereg.utils.metrics import get_ssim
 
 
@@ -68,10 +68,10 @@ class RegistrationClass:
         self.total_attempts = 5
         self.transform = None
 
+        configuration = initialize_configuration(configuration)
+        self.parameters = self._generate_default_parameters()
         if configuration is not None:
             self.update_parameters(configuration)
-        else:
-            self.parameters = self._generate_default_parameters()
 
     def _generate_default_parameters(self) -> dict:
         python_file_path = Path(os.path.normpath(os.path.abspath(__file__)))
