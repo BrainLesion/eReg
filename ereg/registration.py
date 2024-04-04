@@ -229,15 +229,14 @@ class RegistrationClass:
             output_image (str): The output image.
             transform_file (str, optional): The transform file. Defaults to None.
         """
+        if log_file is None:
+            # TODO this will create trouble for non ".nii.gz" file
+            log_file = output_image.replace(".nii.gz", ".log")
+        self._setup_logger(log_file, "resample")
 
         # check if output image exists
         if not os.path.exists(output_image):
             if transform_file is not None:
-                if log_file is None:
-                    # TODO this will create trouble for non ".nii.gz" file
-                    log_file = output_image.replace(".nii.gz", ".log")
-                self._setup_logger(log_file, "resample")
-
                 assert os.path.isfile(transform_file), "Transform file does not exist."
                 transform_from_file = None
                 try:
