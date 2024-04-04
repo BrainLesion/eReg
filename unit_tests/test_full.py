@@ -92,7 +92,7 @@ def test_registration_function():
     transform_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_transform.mat")
     log_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_registration.log")
     test_config = {"initialization": "moments", "bias": True}
-    
+
     registration_function(
         target_image=atlas_sri,
         moving_image=moving_image,
@@ -101,15 +101,16 @@ def test_registration_function():
         transform_file=transform_file,
         log_file=log_file,
     )
-    
+
     _image_sanity_check(atlas_sri, output_image)
     assert os.path.exists(transform_file), "Transform file not created."
     assert os.path.exists(log_file), "Log file not created."
-    
+
     # cleanup
     for file_to_delete in [output_image, transform_file, log_file]:
         os.remove(file_to_delete)
-        
+
+
 def test_resample_function():
     cwd = Path.cwd()
     test_data_dir = (cwd / "data").absolute().as_posix()
@@ -134,7 +135,6 @@ def test_resample_function():
     assert os.path.exists(log_file), "Log file not created."
     for file_to_delete in [output_image, transform_file, log_file]:
         os.remove(file_to_delete)
-
 
 
 def test_bias():
