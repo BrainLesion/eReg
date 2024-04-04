@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 from ereg.cli.run import main
-from ereg.functional import registration_function
+from ereg.functional import registration_function, resample_function
 from ereg.registration import RegistrationClass
 from ereg.utils.io import read_image_and_cast_to_32bit_float
 
@@ -98,6 +98,15 @@ def test_registration_function():
         output_image=output_image,
         config_file=test_config,
         transform_file=transform_file,
+        log_file=log_file,
+    )
+    _image_sanity_check(atlas_sri, output_image)
+    resample_function(
+        target_image=atlas_sri,
+        moving_image=moving_image,
+        output_image=output_image,
+        transform_file=transform_file,
+        configuration=test_config,
         log_file=log_file,
     )
     _image_sanity_check(atlas_sri, output_image)
