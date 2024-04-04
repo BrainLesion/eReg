@@ -6,6 +6,27 @@ import SimpleITK as sitk
 from ereg.registration import RegistrationClass
 
 
+def _initialize_configuration(configuration: Union[str, dict]) -> dict:
+    """
+    Initialize the configuration dictionary.
+
+    Args:
+        configuration (Union[str, dict]): The configuration file or dictionary.
+
+    Returns:
+        dict: The configuration dictionary.
+    """
+    if configuration is not None:
+        if isinstance(configuration, str):
+            assert os.path.isfile(configuration), "Config file does not exist."
+        elif isinstance(configuration, dict):
+            pass
+        else:
+            raise ValueError("Config file must be a string or dictionary.")
+
+    return configuration
+
+
 def registration_function(
     target_image: Union[str, sitk.Image],
     moving_image: Union[str, sitk.Image],
@@ -28,13 +49,7 @@ def registration_function(
     Returns:
         float: The structural similarity index.
     """
-    if configuration is not None:
-        if isinstance(configuration, str):
-            assert os.path.isfile(configuration), "Config file does not exist."
-        elif isinstance(configuration, dict):
-            pass
-        else:
-            raise ValueError("Config file must be a string or dictionary.")
+    configuration = _initialize_configuration(configuration)
 
     registration_obj = RegistrationClass(configuration)
     registration_obj.register(
@@ -72,14 +87,7 @@ def resample_function(
     Returns:
         float: The structural similarity index (SSIM) between the resampled image and the target image.
     """
-
-    if configuration is not None:
-        if isinstance(configuration, str):
-            assert os.path.isfile(configuration), "Config file does not exist."
-        elif isinstance(configuration, dict):
-            pass
-        else:
-            raise ValueError("Config file must be a string or dictionary.")
+    configuration = _initialize_configuration(configuration)
 
     registration_obj = RegistrationClass(configuration)
 
