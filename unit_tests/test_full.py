@@ -27,10 +27,9 @@ def test_main():
     atlas_data_dir = (cwd / "atlases").absolute().as_posix()
     base_config_file = os.path.join(test_data_dir, "test_config.yaml")
     moving_image = os.path.join(test_data_dir, "tcia_aaac_t1ce.nii.gz")
-    output_image = os.path.join(
-        tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
-    )
-    transform_file = os.path.join(tempfile.gettempdir(), "tcia_aaac_t1ce_transform.mat")
+    temp_output_dir = tempfile.gettempdir()
+    output_image = os.path.join(temp_output_dir, "tcia_aaac_t1ce_registered.nii.gz")
+    transform_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_transform.mat")
     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
     test_config = {"initialization": "moments"}
     with open(base_config_file, "w") as f:
@@ -91,6 +90,7 @@ def test_registration_function():
     output_image = os.path.join(temp_output_dir, "tcia_aaac_t1ce_registered.nii.gz")
     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
     transform_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_transform.mat")
+    log_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_registration.log")
     test_config = {"initialization": "moments", "bias": True}
     registration_function(
         target_image=atlas_sri,
@@ -98,10 +98,12 @@ def test_registration_function():
         output_image=output_image,
         config_file=test_config,
         transform_file=transform_file,
+        log_file=log_file,
     )
     _image_sanity_check(atlas_sri, output_image)
     assert os.path.exists(transform_file), "Transform file not created."
-    for file_to_delete in [output_image, transform_file]:
+    assert os.path.exists(log_file), "Log file not created."
+    for file_to_delete in [output_image, transform_file, log_file]:
         os.remove(file_to_delete)
 
 
