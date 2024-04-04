@@ -70,6 +70,7 @@ class RegistrationClass:
 
         configuration = initialize_configuration(configuration)
         self.parameters = self._generate_default_parameters()
+        self.ssim_score = None
         if configuration is not None:
             self.update_parameters(configuration)
 
