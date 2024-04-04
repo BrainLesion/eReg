@@ -2,6 +2,7 @@ import logging
 import os
 from pathlib import Path
 from typing import Union
+from importlib import reload
 
 import numpy as np
 
@@ -240,13 +241,14 @@ class RegistrationClass:
                 if log_file is None:
                     # TODO this will create trouble for non ".nii.gz" file
                     log_file = output_image.replace(".nii.gz", ".log")
+                reload(logging)
                 logging.basicConfig(
                     filename=log_file,
                     format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
                     datefmt="%H:%M:%S",
                     level=logging.DEBUG,
                 )
-                self.logger = logging.getLogger("registration")
+                self.logger = logging.getLogger("resample")
 
                 assert os.path.isfile(transform_file), "Transform file does not exist."
                 transform_from_file = None
