@@ -139,13 +139,7 @@ class RegistrationClass:
         if log_file is None:
             # TODO this will create trouble for non ".nii.gz" files
             log_file = output_image.replace(".nii.gz", ".log")
-        logging.basicConfig(
-            filename=log_file,
-            format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
-            datefmt="%H:%M:%S",
-            level=logging.DEBUG,
-        )
-        self.logger = logging.getLogger("registration")
+        self._setup_logger(log_file, "registration")
 
         self.logger.info(f"Target image: {target_image}, Moving image: {moving_image}")
         target_image = read_image_and_cast_to_32bit_float(target_image)
@@ -241,14 +235,7 @@ class RegistrationClass:
                 if log_file is None:
                     # TODO this will create trouble for non ".nii.gz" file
                     log_file = output_image.replace(".nii.gz", ".log")
-                reload(logging)
-                logging.basicConfig(
-                    filename=log_file,
-                    format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
-                    datefmt="%H:%M:%S",
-                    level=logging.DEBUG,
-                )
-                self.logger = logging.getLogger("resample")
+                self._setup_logger(log_file, "resample")
 
                 assert os.path.isfile(transform_file), "Transform file does not exist."
                 transform_from_file = None
@@ -815,3 +802,24 @@ class RegistrationClass:
                 tmp.SetCenter(registration_transform_sitk.GetCenter())
                 registration_transform_sitk = tmp
         return registration_transform_sitk
+
+    def _setup_logger(self, log_file: str, logger_type: str) -> None:
+        """
+        Setup the logger.
+
+        Args:
+            log_file (str): The log file.
+            logger_type (str): The logger type.
+        """
+        reload(logging)
+        logging.basicConfig(
+            filename=log_file,
+            format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
+            datefmt="%H:%M:%S",
+            level=logging.DEBUG,
+        )
+        self.logger = logging.getLogger(logger_type)
+        console = logging.StreamHandler()
+        console.setLevel(logging.INFO)
+        # add the handler to the root logger
+        self.logger.addHandler(console)
