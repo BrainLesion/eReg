@@ -13,6 +13,8 @@ import yaml
 from ereg.utils.io import read_image_and_cast_to_32bit_float, initialize_configuration
 from ereg.utils.metrics import get_ssim
 
+from auxiliary.turbopath import name_extractor
+
 
 class RegistrationClass:
     def __init__(
@@ -138,8 +140,8 @@ class RegistrationClass:
         """
 
         if log_file is None:
-            # TODO this will create trouble for non ".nii.gz" files
-            log_file = output_image.replace(".nii.gz", ".log")
+            output_name = name_extractor(output_image)
+            log_file = output_name + ".log"
         self._setup_logger(log_file, "registration")
 
         self.logger.info(f"Target image: {target_image}, Moving image: {moving_image}")
@@ -230,8 +232,8 @@ class RegistrationClass:
             transform_file (str, optional): The transform file. Defaults to None.
         """
         if log_file is None:
-            # TODO this will create trouble for non ".nii.gz" file
-            log_file = output_image.replace(".nii.gz", ".log")
+            output_name = name_extractor(output_image)
+            log_file = output_name + ".log"
         self._setup_logger(log_file, "resample")
 
         # check if output image exists
