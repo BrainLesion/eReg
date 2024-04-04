@@ -30,9 +30,7 @@ def test_main():
     output_image = os.path.join(
         tempfile.gettempdir(), "tcia_aaac_t1ce_registered.nii.gz"
     )
-    output_transform = os.path.join(
-        tempfile.gettempdir(), "tcia_aaac_t1ce_transform.mat"
-    )
+    transform_file = os.path.join(tempfile.gettempdir(), "tcia_aaac_t1ce_transform.mat")
     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
     test_config = {"initialization": "moments"}
     with open(base_config_file, "w") as f:
@@ -47,14 +45,14 @@ def test_main():
             "--output",
             output_image,
             "--transfile",
-            output_transform,
+            transform_file,
             "--config",
             base_config_file,
         ]
     )
     _image_sanity_check(atlas_sri, output_image)
-    os.remove(output_image)
-    os.remove(output_transform)
+    for file_to_delete in [output_image, transform_file]:
+        os.remove(file_to_delete)
 
 
 ## todo: this is not working for some reason -- will fix later
@@ -103,7 +101,8 @@ def test_registration_function():
     )
     _image_sanity_check(atlas_sri, output_image)
     assert os.path.exists(transform_file), "Transform file not created."
-    os.rmdir(temp_output_dir)
+    for file_to_delete in [output_image, transform_file]:
+        os.remove(file_to_delete)
 
 
 def test_bias():
