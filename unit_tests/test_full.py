@@ -112,7 +112,7 @@ def test_registration_function():
         os.remove(file_to_delete)
 
 
-def test_resample_function():
+def test_resample_function_using_previously_saved_transform():
     cwd = Path.cwd()
     test_data_dir = (cwd / "data").absolute().as_posix()
     atlas_data_dir = (cwd / "atlases").absolute().as_posix()
@@ -155,7 +155,9 @@ def test_registration_and_resampling_function():
 
     atlas_sri = os.path.join(atlas_data_dir, "sri24", "image.nii.gz")
     transform_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_transform.mat")
-    log_file = os.path.join(temp_output_dir, "tcia_aaac_t1ce_registration.log")
+    registration_log_file = os.path.join(
+        temp_output_dir, "tcia_aaac_t1ce_registration.log"
+    )
     resample_log_file = os.path.join(
         temp_output_dir, "tcia_aaac_t1ce_transformation.log"
     )
@@ -167,33 +169,33 @@ def test_registration_and_resampling_function():
         output_image=output_image,
         config_file=test_config,
         transform_file=transform_file,
-        log_file=log_file,
+        log_file=registration_log_file,
     )
+    assert os.path.exists(registration_log_file), "Registration log file not created."
 
     # checks
     _image_sanity_check(atlas_sri, output_image)
     assert os.path.exists(transform_file), "Transform file not created."
-    assert os.path.exists(log_file), "Log file not created."
 
     resample_function(
         target_image=atlas_sri,
         moving_image=moving_image,
-        output_image=output_image,
+        output_image=resample_output_image,
         transform_file=transform_file,
         configuration=test_config,
         log_file=resample_log_file,
     )
 
     _image_sanity_check(atlas_sri, resample_output_image)
-    assert os.path.exists(transform_file), "Transform file not created."
-    assert os.path.exists(resample_log_file), "Log file not created."
+    assert os.path.exists(transform_file), "Transform file got deleted, somehow."
+    assert os.path.exists(resample_log_file), "Transform log file not created."
 
     # cleanup
     for file_to_delete in [
         output_image,
         resample_output_image,
         transform_file,
-        log_file,
+        registration_log_file,
         resample_log_file,
     ]:
         os.remove(file_to_delete)
