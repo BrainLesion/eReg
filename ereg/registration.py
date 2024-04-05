@@ -13,8 +13,6 @@ import yaml
 from ereg.utils.io import read_image_and_cast_to_32bit_float, initialize_configuration
 from ereg.utils.metrics import get_ssim
 
-from auxiliary.turbopath import name_extractor
-
 
 class RegistrationClass:
     def __init__(
@@ -138,10 +136,7 @@ class RegistrationClass:
             output_image (str): The output image.
             transform_file (str, optional): The transform file. Defaults to None.
         """
-
-        if log_file is None:
-            output_name = name_extractor(output_image)
-            log_file = output_name + ".log"
+        log_file = self._get_log_file(output_image, log_file)
         self._setup_logger(log_file, "registration")
 
         self.logger.info(f"Target image: {target_image}, Moving image: {moving_image}")
@@ -231,9 +226,7 @@ class RegistrationClass:
             output_image (str): The output image.
             transform_file (str, optional): The transform file. Defaults to None.
         """
-        if log_file is None:
-            output_name = name_extractor(output_image)
-            log_file = output_name + ".log"
+        log_file = self._get_log_file(output_image, log_file)
         self._setup_logger(log_file, "resample")
 
         # check if output image exists
@@ -825,3 +818,11 @@ class RegistrationClass:
         console.setLevel(logging.INFO)
         # add the handler to the root logger
         self.logger.addHandler(console)
+
+    def _get_log_file(self, output_image: str, log_file: str = None) -> str:
+        if log_file is None:
+            extensions = Path(output_image).suffixes
+            output_image_base = output_image
+            for ext in extensions:
+                output_image_base = output_image_base.replace(ext, "")
+            log_file = output_image_base + ".log"
