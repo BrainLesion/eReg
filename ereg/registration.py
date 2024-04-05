@@ -825,4 +825,8 @@ class RegistrationClass:
             output_image_base = output_image
             for ext in extensions:
                 output_image_base = output_image_base.replace(ext, "")
-            log_file = output_image_base + ".log"
+            return output_image_base + ".log"
+        else:
+            return log_file
+        
+        
