@@ -828,5 +828,3 @@ class RegistrationClass:
             return output_image_base + ".log"
         else:
             return log_file
-        
-        
