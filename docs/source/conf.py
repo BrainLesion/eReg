@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 
 # -- Project information -----------------------------------------------------
 
-project = "panoptica"
+project = "eReg"
 copyright = "2023, florian kofler et al."
 author = "Florian Kofler et al."
 
@@ -61,6 +61,6 @@ html_static_path = ["_static"]
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
-    "private-members": True,
+    "private-members": False,
     "show-inheritance": True,
 }

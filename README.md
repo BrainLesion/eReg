@@ -1,10 +1,14 @@
+[![PyPI version preprocessing](https://badge.fury.io/py/eReg.svg)](https://pypi.python.org/pypi/eReg/)
+[![Documentation Status](https://readthedocs.org/projects/ereg/badge/?version=latest)](http://ereg.readthedocs.io/?badge=latest)
+[![tests](https://github.com/BrainLesion/eReg/actions/workflows/tests.yml/badge.svg)](https://github.com/BrainLesion/eReg/actions/workflows/tests.yml)
+
 # eReg - A Simple Registration Tool
+**eReg** is a robust, fast and user-friendly registration tool that can be used in clinical environments without the need for virtualization or containerization technologies. It supports most platforms across various hardware configurations.
 
 ## Need
-
 Because of security concerns, users in clinical environments do not have access to virtualization and containerization technologies such as Docker and Singularity. This becomes a problem, because most research code (especially for image registration) is built around the need to have access to these technologies. Alternatively, some tools only work on a Linux environment, or they need specific hardware resources (such as a DL accelerator card), which are not always available in clinical settings.
 
-**eReg** is a simple registration tool that can be used in clinical environments without the need for virtualization or containerization technologies. It supports most platforms across various hardware configurations.
+
 
 ## Installation
 
@@ -56,7 +60,7 @@ options:
 ```
 
 ### Pythonic Interface
-The `ereg` package provides two Python interfaces, an object-oriented interface, as well as convenience functions.
+The `ereg` package provides two Python interfaces, an object-oriented interface, as well as convenience functions. A [Jupyter notebook tutorial](https://github.com/BrainLesion/tutorials/tree/main/eReg) is available to illustrate usage of the Python API.
 
 #### Object-Oriented Interface
 
