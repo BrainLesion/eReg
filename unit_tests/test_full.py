@@ -175,9 +175,7 @@ def test_registration_and_resampling_function():
     )
     assert os.path.exists(registration_log_file), "Registration log file not created."
     # check if registration_log_file is empty
-    assert (
-        os.path.getsize(registration_log_file) > 0
-    ), "Registration log file is empty."
+    assert os.path.getsize(registration_log_file) > 0, "Registration log file is empty."
 
     # checks
     _image_sanity_check(atlas_sri, output_image)
