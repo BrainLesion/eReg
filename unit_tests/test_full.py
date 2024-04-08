@@ -172,6 +172,10 @@ def test_registration_and_resampling_function():
         log_file=registration_log_file,
     )
     assert os.path.exists(registration_log_file), "Registration log file not created."
+    # check if registration_log_file is empty
+    assert (
+        os.path.getsize(registration_log_file) == 0
+    ), "Registration log file is empty."
 
     # checks
     _image_sanity_check(atlas_sri, output_image)
@@ -189,6 +193,8 @@ def test_registration_and_resampling_function():
     _image_sanity_check(atlas_sri, resample_output_image)
     assert os.path.exists(transform_file), "Transform file got deleted, somehow."
     assert os.path.exists(resample_log_file), "Transform log file not created."
+    # check if resample_log_file is empty
+    assert os.path.getsize(resample_log_file) == 0, "Resample log file is empty."
 
     # cleanup
     for file_to_delete in [
