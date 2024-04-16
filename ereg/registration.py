@@ -142,6 +142,8 @@ class RegistrationClass:
         log_file = self._get_log_file(output_image, log_file)
         self._set_log_file(log_file)
 
+        logger.info(f"{'register: Starting registration':=^100}")
+
         logger.info(f"Target image: {target_image}, Moving image: {moving_image}")
         target_image = read_image_and_cast_to_32bit_float(target_image)
         moving_image = read_image_and_cast_to_32bit_float(moving_image)
@@ -158,8 +160,11 @@ class RegistrationClass:
                 try:
                     self.transform = sitk.ReadTransform(transform_file)
                     compute_transform = False
+                    logger.info("Specified transform file already exists.")
                 except:
-                    logger.info("Could not read transform file. Computing transform.")
+                    logger.warning(
+                        "Could not read transform file. Computing transform."
+                    )
                     pass
         if compute_transform:
             logger.info(f"Starting registration with parameters:: {self.parameters}")
@@ -195,15 +200,13 @@ class RegistrationClass:
 
             self.transform = current_transform
 
-        # no need for logging since resample_image will log by itself
-        logging.shutdown()
-
         # resample the moving image to the target image
         self.resample_image(
             target_image=target_image,
             moving_image=moving_image,
             output_image=output_image,
             transform_file=transform_file,
+            log_file=log_file,
         )
 
     def resample_image(
@@ -219,14 +222,16 @@ class RegistrationClass:
         Resample the moving image to the target image.
 
         Args:
-            logger (logging.Logger): The logger to use.
             target_image (Union[str, sitk.Image]): The target image.
             moving_image (Union[str, sitk.Image]): The moving image.
             output_image (str): The output image.
             transform_file (str, optional): The transform file. Defaults to None.
         """
+
         log_file = self._get_log_file(output_image, log_file)
         self._set_log_file(log_file)
+
+        logger.info(f"{'resample_image: Starting transformation':=^100}")
 
         # check if output image exists
         if not os.path.exists(output_image):
@@ -240,7 +245,6 @@ class RegistrationClass:
                     ), "Transform could not be read."
                 except Exception as e:
                     logger.error(f"Could not read transform file: {e}")
-                    logging.shutdown()
                     return None
 
                 logger.info(
@@ -265,7 +269,6 @@ class RegistrationClass:
                 logger.info(
                     f"SSIM score of moving against target image: {self.ssim_score}"
                 )
-                logging.shutdown()
 
                 return self.ssim_score
 
@@ -797,7 +800,7 @@ class RegistrationClass:
 
     def _setup_logger(self):
         logging.basicConfig(
-            format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
+            format="[%(levelname)-8s | %(module)-15s | L%(lineno)-5d] | %(asctime)s: %(message)s",
             datefmt="%H:%M:%S",
             level=logging.DEBUG,
         )
@@ -819,7 +822,7 @@ class RegistrationClass:
         self.log_file_handler = logging.FileHandler(log_file)
         self.log_file_handler.setFormatter(
             logging.Formatter(
-                "%(asctime)s,%(name)s,%(levelname)s,%(message)s",
+                "[%(levelname)-8s | %(module)-15s | L%(lineno)-5d] | %(asctime)s: %(message)s",
                 "%Y-%m-%dT%H:%M:%S%z",
             )
         )
