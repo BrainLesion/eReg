@@ -1,14 +1,14 @@
+from __future__ import annotations
+
 import logging
 import os
 from pathlib import Path
 from typing import Union
 
 import numpy as np
-
 import SimpleITK as sitk
 import yaml
-
-from ereg.utils.io import read_image_and_cast_to_32bit_float, initialize_configuration
+from ereg.utils.io import initialize_configuration, read_image_and_cast_to_32bit_float
 from ereg.utils.metrics import get_ssim
 
 logger = logging.getLogger(__name__)
