@@ -1,16 +1,17 @@
+from __future__ import annotations
+
 import logging
 import os
 from pathlib import Path
 from typing import Union
 
 import numpy as np
-
-# from pprint import pprint
 import SimpleITK as sitk
 import yaml
-
-from ereg.utils.io import read_image_and_cast_to_32bit_float
+from ereg.utils.io import initialize_configuration, read_image_and_cast_to_32bit_float
 from ereg.utils.metrics import get_ssim
+
+logger = logging.getLogger(__name__)
 
 
 class RegistrationClass:
@@ -25,6 +26,9 @@ class RegistrationClass:
         Args:
             config_file (Union[str, dict]): The config file or dictionary.
         """
+
+        self._setup_logger()
+
         self.available_metrics = [
             "mattes_mutual_information",
             "ants_neighborhood_correlation",
@@ -67,10 +71,11 @@ class RegistrationClass:
         self.total_attempts = 5
         self.transform = None
 
+        configuration = initialize_configuration(configuration)
+        self.parameters = self._generate_default_parameters()
+        self.ssim_score = None
         if configuration is not None:
             self.update_parameters(configuration)
-        else:
-            self.parameters = self._generate_default_parameters()
 
     def _generate_default_parameters(self) -> dict:
         python_file_path = Path(os.path.normpath(os.path.abspath(__file__)))
@@ -134,24 +139,17 @@ class RegistrationClass:
             output_image (str): The output image.
             transform_file (str, optional): The transform file. Defaults to None.
         """
+        log_file = self._get_log_file(output_image, log_file)
+        self._set_log_file(log_file)
 
-        if log_file is None:
-            # TODO this will create trouble for non ".nii.gz" files
-            log_file = output_image.replace(".nii.gz", ".log")
-        logging.basicConfig(
-            filename=log_file,
-            format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
-            datefmt="%H:%M:%S",
-            level=logging.DEBUG,
-        )
-        self.logger = logging.getLogger("registration")
+        logger.info(f"{'register: Starting registration':=^100}")
 
-        self.logger.info(f"Target image: {target_image}, Moving image: {moving_image}")
+        logger.info(f"Target image: {target_image}, Moving image: {moving_image}")
         target_image = read_image_and_cast_to_32bit_float(target_image)
         moving_image = read_image_and_cast_to_32bit_float(moving_image)
 
         if self.parameters.get("bias"):
-            self.logger.info("Bias correcting images.")
+            logger.info("Bias correcting images.")
             target_image = self._bias_correct_image(target_image)
             moving_image = self._bias_correct_image(moving_image)
 
@@ -162,15 +160,14 @@ class RegistrationClass:
                 try:
                     self.transform = sitk.ReadTransform(transform_file)
                     compute_transform = False
+                    logger.info("Specified transform file already exists.")
                 except:
-                    self.logger.info(
+                    logger.warning(
                         "Could not read transform file. Computing transform."
                     )
                     pass
         if compute_transform:
-            self.logger.info(
-                f"Starting registration with parameters:: {self.parameters}"
-            )
+            logger.info(f"Starting registration with parameters:: {self.parameters}")
             self.transform = self._register_image_and_get_transform(
                 target_image=target_image,
                 moving_image=moving_image,
@@ -183,7 +180,7 @@ class RegistrationClass:
             "composite_transform", None
         )
         if self.parameters.get("composite_transform"):
-            self.logger.info("Applying composite transform.")
+            logger.info("Applying composite transform.")
             transform_composite = sitk.ReadTransform(
                 self.parameters["composite_transform"]
             )
@@ -191,7 +188,7 @@ class RegistrationClass:
                 transform_composite, self.transform
             )
 
-            self.logger.info("Applying previous transforms.")
+            logger.info("Applying previous transforms.")
             current_transform = None
             for previous_transform in self.parameters["previous_transforms"]:
                 previous_transform = sitk.ReadTransform(previous_transform)
@@ -203,15 +200,13 @@ class RegistrationClass:
 
             self.transform = current_transform
 
-        # no need for logging since resample_image will log by itself
-        logging.shutdown()
-
         # resample the moving image to the target image
         self.resample_image(
             target_image=target_image,
             moving_image=moving_image,
             output_image=output_image,
             transform_file=transform_file,
+            log_file=log_file,
         )
 
     def resample_image(
@@ -227,34 +222,38 @@ class RegistrationClass:
         Resample the moving image to the target image.
 
         Args:
-            logger (logging.Logger): The logger to use.
             target_image (Union[str, sitk.Image]): The target image.
             moving_image (Union[str, sitk.Image]): The moving image.
             output_image (str): The output image.
             transform_file (str, optional): The transform file. Defaults to None.
         """
 
+        log_file = self._get_log_file(output_image, log_file)
+        self._set_log_file(log_file)
+
+        logger.info(f"{'resample_image: Starting transformation':=^100}")
+
         # check if output image exists
         if not os.path.exists(output_image):
-            if self.transform is not None:
-                if log_file is None:
-                    # TODO this will create trouble for non ".nii.gz" file
-                    log_file = output_image.replace(".nii.gz", ".log")
-                logging.basicConfig(
-                    filename=log_file,
-                    format="%(asctime)s,%(name)s,%(levelname)s,%(message)s",
-                    datefmt="%H:%M:%S",
-                    level=logging.DEBUG,
-                )
-                self.logger = logging.getLogger("registration")
+            if transform_file is not None:
+                assert os.path.isfile(transform_file), "Transform file does not exist."
+                transform_from_file = None
+                try:
+                    transform_from_file = sitk.ReadTransform(transform_file)
+                    assert (
+                        transform_from_file is not None
+                    ), "Transform could not be read."
+                except Exception as e:
+                    logger.error(f"Could not read transform file: {e}")
+                    return None
 
-                self.logger.info(
+                logger.info(
                     f"Target image: {target_image}, Moving image: {moving_image}, Transform file: {transform_file}"
                 )
                 target_image = read_image_and_cast_to_32bit_float(target_image)
                 moving_image = read_image_and_cast_to_32bit_float(moving_image)
 
-                self.logger.info("Resampling image.")
+                logger.info("Resampling image.")
                 resampler = sitk.ResampleImageFilter()
                 resampler.SetReferenceImage(target_image)
                 interpolator_type = self.interpolator_type.get(
@@ -263,14 +262,13 @@ class RegistrationClass:
                 )
                 resampler.SetInterpolator(interpolator_type)
                 resampler.SetDefaultPixelValue(0)
-                resampler.SetTransform(self.transform)
+                resampler.SetTransform(transform_from_file)
                 output_image_struct = resampler.Execute(moving_image)
                 sitk.WriteImage(output_image_struct, output_image)
                 self.ssim_score = get_ssim(target_image, output_image_struct)
-                self.logger.info(
+                logger.info(
                     f"SSIM score of moving against target image: {self.ssim_score}"
                 )
-                logging.shutdown()
 
                 return self.ssim_score
 
@@ -390,7 +388,7 @@ class RegistrationClass:
         for dim in range(dimension):
             physical_units *= target_image.GetSpacing()[dim]
 
-        self.logger.info("Initializing registration.")
+        logger.info("Initializing registration.")
         registration = sitk.ImageRegistrationMethod()
         self.parameters["metric_parameters"] = self.parameters.get(
             "metric_parameters", {}
@@ -761,21 +759,19 @@ class RegistrationClass:
         registration.SetInterpolator(sitk.sitkLinear)
 
         # registration.AddCommand(sitk.sitkIterationEvent, lambda: R)
-        self.logger.info("Starting registration.")
+        logger.info("Starting registration.")
         output_transform = None
         for _ in range(self.parameters["attempts"]):
             try:
                 output_transform = registration.Execute(target_image, moving_image)
                 break
             except RuntimeError as e:
-                self.logger.warning(
-                    "Registration failed with error: %s. Retrying." % (e)
-                )
+                logger.warning("Registration failed with error: %s. Retrying." % (e))
                 continue
 
         assert output_transform is not None, "Registration failed."
 
-        self.logger.info(
+        logger.info(
             f"Final Optimizer Parameters:: convergence={registration.GetOptimizerConvergenceValue()}, iterations={registration.GetOptimizerIteration()}, metric={registration.GetMetricValue()}, stop condition={registration.GetOptimizerStopConditionDescription()}"
         )
 
@@ -801,3 +797,45 @@ class RegistrationClass:
                 tmp.SetCenter(registration_transform_sitk.GetCenter())
                 registration_transform_sitk = tmp
         return registration_transform_sitk
+
+    def _setup_logger(self):
+        logging.basicConfig(
+            format="[%(levelname)-8s | %(module)-15s | L%(lineno)-5d] | %(asctime)s: %(message)s",
+            datefmt="%H:%M:%S",
+            level=logging.DEBUG,
+        )
+        self.log_file_handler = None
+
+    def _set_log_file(self, log_file: str | Path) -> None:
+        """Set the log file for the logger.
+
+        Args:
+            log_file (str | Path): log file path
+        """
+        if self.log_file_handler:
+            logging.getLogger().removeHandler(self.log_file_handler)
+
+        parent_dir = os.path.dirname(log_file)
+        # create parent dir if the path is more than just a file name
+        if parent_dir:
+            os.makedirs(parent_dir, exist_ok=True)
+        self.log_file_handler = logging.FileHandler(log_file)
+        self.log_file_handler.setFormatter(
+            logging.Formatter(
+                "[%(levelname)-8s | %(module)-15s | L%(lineno)-5d] | %(asctime)s: %(message)s",
+                "%Y-%m-%dT%H:%M:%S%z",
+            )
+        )
+
+        # Add the file handler to the !root! logger
+        logging.getLogger().addHandler(self.log_file_handler)
+
+    def _get_log_file(self, output_image: str, log_file: str = None) -> str:
+        if log_file is None:
+            extensions = Path(output_image).suffixes
+            output_image_base = output_image
+            for ext in extensions:
+                output_image_base = output_image_base.replace(ext, "")
+            return output_image_base + ".log"
+        else:
+            return log_file

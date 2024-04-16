@@ -4,6 +4,7 @@ from typing import Union
 import SimpleITK as sitk
 
 from ereg.registration import RegistrationClass
+from ereg.utils import initialize_configuration
 
 
 def registration_function(
@@ -28,13 +29,7 @@ def registration_function(
     Returns:
         float: The structural similarity index.
     """
-    if configuration is not None:
-        if isinstance(configuration, str):
-            assert os.path.isfile(configuration), "Config file does not exist."
-        elif isinstance(configuration, dict):
-            pass
-        else:
-            raise ValueError("Config file must be a string or dictionary.")
+    configuration = initialize_configuration(configuration)
 
     registration_obj = RegistrationClass(configuration)
     registration_obj.register(
@@ -48,4 +43,41 @@ def registration_function(
     return registration_obj.ssim_score
 
 
-# TODO we also need a transformation/resample function
+def resample_function(
+    target_image: Union[str, sitk.Image],
+    moving_image: Union[str, sitk.Image],
+    output_image: str,
+    transform_file: str,
+    configuration: Union[str, dict] = None,
+    log_file: str = None,
+    **kwargs,
+) -> float:
+    """
+    Resample the moving image onto the space of the target image using a given transformation.
+
+    Args:
+        target_image (Union[str, sitk.Image]): The target image onto which the moving image will be resampled.
+        moving_image (Union[str, sitk.Image]): The image to be resampled.
+        output_image (str): The filename or path where the resampled image will be saved.
+        transform_file (str): The file containing the transformation to be applied.
+        configuration (Union[str, dict], optional): The configuration file or dictionary. Defaults to None.
+        log_file (str, optional): The file to log progress and details of the resampling process. Defaults to None.
+        **kwargs: Additional keyword arguments to be passed to the resampling function.
+
+    Returns:
+        float: The structural similarity index (SSIM) between the resampled image and the target image.
+    """
+    configuration = initialize_configuration(configuration)
+
+    registration_obj = RegistrationClass(configuration)
+
+    registration_obj.resample_image(
+        target_image=target_image,
+        moving_image=moving_image,
+        output_image=output_image,
+        transform_file=transform_file,
+        log_file=log_file,
+        **kwargs,
+    )
+
+    return registration_obj.ssim_score

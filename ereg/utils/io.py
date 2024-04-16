@@ -1,4 +1,4 @@
-# import os, tempfile, requestsw
+import os
 from typing import Union
 
 import SimpleITK as sitk
@@ -42,3 +42,24 @@ def read_image_and_cast_to_32bit_float(
     caster = sitk.CastImageFilter()
     caster.SetOutputPixelType(sitk.sitkFloat32)
     return caster.Execute(input_image)
+
+
+def initialize_configuration(configuration: Union[str, dict]) -> dict:
+    """
+    Initialize the configuration dictionary.
+
+    Args:
+        configuration (Union[str, dict]): The configuration file or dictionary.
+
+    Returns:
+        dict: The configuration dictionary.
+    """
+    if configuration is not None:
+        if isinstance(configuration, str):
+            assert os.path.isfile(configuration), "Config file does not exist."
+        elif isinstance(configuration, dict):
+            pass
+        else:
+            raise ValueError("Config file must be a string or dictionary.")
+
+    return configuration
